@@ -409,6 +409,27 @@ tbody tr:hover{background:var(--off)}
   .ops-foot4{grid-template-columns:1fr 1fr}.ops-box4{grid-template-columns:1fr 1fr}
   .ops-stock{flex-direction:column}.ops-tabs{flex-direction:row;width:auto;overflow-x:auto}.ops-tabbtn{white-space:nowrap}
 }
+/* ── Two applications: indicator + chooser ── */
+.app-pill{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.8px;border-radius:20px;padding:3px 10px;vertical-align:middle;margin-right:4px}
+.app-pill-store{background:#2563eb1a;color:#2563eb;border:1px solid #2563eb44}
+.app-pill-prod{background:#16a34a1a;color:#15803d;border:1px solid #16a34a55}
+.appsel{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 50% -10%,#24407e 0%,#1a2744 55%,#111a33 100%);padding:24px;box-sizing:border-box}
+.appsel-in{width:100%;max-width:880px;text-align:center;color:#fff}
+.appsel-in h1{margin:12px 0 0;font-size:30px;letter-spacing:3px;font-weight:900}
+.appsel-h{margin:6px 0 22px;font-size:15px;color:rgba(255,255,255,.65);letter-spacing:.5px}
+.appsel-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.appsel-card{all:unset;box-sizing:border-box;cursor:pointer;text-align:left;background:#fff;color:#0f1d45;border-radius:18px;padding:22px 22px 18px;border-top:5px solid var(--ac);box-shadow:0 10px 40px rgba(0,0,0,.35);transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;gap:6px}
+.appsel-card:hover,.appsel-card:focus-visible{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.45)}
+.appsel-ico{width:54px;height:54px;border-radius:14px;background:var(--ac);display:grid;place-items:center;margin-bottom:6px}
+.appsel-t{font-size:22px;font-weight:900;letter-spacing:1.5px;color:var(--ac)}
+.appsel-s{font-size:13px;font-weight:600;color:#42506e}
+.appsel-l{margin:8px 0 6px;padding-left:18px;font-size:12px;color:#5a6b8c;line-height:1.7}
+.appsel-go{margin-top:auto;font-size:12.5px;font-weight:800;color:var(--ac)}
+.appsel-note{margin-top:20px;font-size:12px;color:rgba(255,255,255,.5)}
+@media(max-width:700px){.appsel-grid{grid-template-columns:1fr}.appsel-in h1{font-size:24px}}
+.ops-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.ops-kpi{background:#fff;border:1px solid #edf0f8;border-radius:12px;padding:10px 14px;box-shadow:0 2px 10px rgba(26,39,68,.05);display:flex;align-items:baseline;gap:8px}
+.ops-kpi b{font-size:22px;font-weight:800}.ops-kpi span{font-size:11px;color:#5a6b8c;font-weight:600}
 </style>
 </head>
 <body>
@@ -835,7 +856,7 @@ const mapGIV = r => r && ({ id: r.id, givNo: r.gin_no, whId: r.warehouse_id, iss
 const mapTRN = r => r && ({ id: r.id, trnNo: r.trn_no, fromWhId: r.from_warehouse_id, toWhId: r.to_warehouse_id, purpose: r.purpose, remarks: r.remarks, submittedBy: r.submitted_by, totalItems: r.total_items||0, status: r.status, approvedBy: r.approved_by, approvedAt: r.approved_at, rejectReason: r.reject_reason, date: r.date, createdAt: r.created_at });
 const mapCON = r => r && ({ id: r.id, conNo: r.con_no, whId: r.warehouse_id, date: r.date, jobNo: r.job_no, jobType: r.job_type, department: r.department, remarks: r.remarks, totalItems: r.total_items, status: r.status, submittedBy: r.submitted_by, approvedBy: r.approved_by, approvedAt: r.approved_at, rejectReason: r.reject_reason, createdAt: r.created_at });
 const mapPRO = r => r && ({ id: r.id, proNo: r.pro_no, whId: r.warehouse_id, date: r.date, productName: r.product_name, batchNo: r.batch_no, remarks: r.remarks, totalItems: (r.total_items)||0, status: r.status, submittedBy: r.submitted_by, approvedBy: r.approved_by, approvedAt: r.approved_at, rejectReason: r.reject_reason, createdAt: r.created_at,
-  tankId: r.tank_id || null, runSeconds: r.actual_run_seconds == null ? null : Number(r.actual_run_seconds), runTime: r.actual_run_time || null, startTime: r.start_time || null, endTime: r.completion_time || null });
+  runSeconds: r.actual_run_seconds == null ? null : Number(r.actual_run_seconds), runTime: r.actual_run_time || null, startTime: r.start_time || null, endTime: r.completion_time || null });
 const mapMR  = r => r && ({ id: r.id, mrNo: r.mr_no, whId: r.warehouse_id, date: r.date, requiredBy: r.required_by, department: r.department, priority: r.priority, purpose: r.purpose, remarks: r.remarks, totalItems: r.total_items, status: r.status, submittedBy: r.submitted_by, approvedBy: r.approved_by, approvedAt: r.approved_at, rejectReason: r.reject_reason, createdAt: r.created_at });
 const mapDMG = r => r && ({ id: r.id, dmgNo: r.dmg_no, whId: r.warehouse_id, date: r.date, damageType: r.damage_type, disposalMethod: r.disposal_method, reportedBy: r.reported_by, location: r.location, remarks: r.remarks, totalItems: r.total_items, totalLoss: Number(r.total_loss), status: r.status, submittedBy: r.submitted_by, approvedBy: r.approved_by, approvedAt: r.approved_at, rejectReason: r.reject_reason, createdAt: r.created_at });
 
@@ -1694,8 +1715,16 @@ const proSvc = {
   async create(d) {
     const sett = settSvc.get();
     const proNo = await nextVoucherNo('pro', sett.proPrefix || 'PRO');
-    const row = await sb.insert('production_orders', { warehouse_id: d.whId, pro_no: proNo, date: d.date, product_name: d.productName, batch_no: d.batchNo || null, remarks: d.remarks, status: 'Pending Approval', submitted_by: d.submittedBy || null,
-      ...((d.tankId || d.runSeconds > 0) ? { tank_id: d.tankId || null, actual_run_seconds: d.runSeconds > 0 ? Math.round(d.runSeconds) : null, actual_run_time: d.runSeconds > 0 ? fmtHMS(d.runSeconds) : null, start_time: d.startTime || null, completion_time: d.endTime || null } : {}) });
+    const base = { warehouse_id: d.whId, pro_no: proNo, date: d.date, product_name: d.productName, batch_no: d.batchNo || null, remarks: d.remarks, status: 'Pending Approval', submitted_by: d.submittedBy || null };
+    const runCols = (d.runSeconds > 0) ? { actual_run_seconds: Math.round(d.runSeconds), actual_run_time: fmtHMS(d.runSeconds), start_time: d.startTime || null, completion_time: d.endTime || null } : {};
+    this.runTimeNotSaved = false;
+    let row;
+    try { row = await sb.insert('production_orders', { ...base, ...runCols }); }
+    catch (e) {
+      // the optional run-time columns are missing (solopos_store_update.sql not run yet): save the voucher anyway
+      if (Object.keys(runCols).length && /actual_run_seconds|actual_run_time|start_time|completion_time|schema cache/i.test(e.message)) { row = await sb.insert('production_orders', base); this.runTimeNotSaved = true; }
+      else throw e;
+    }
     if (d.rawMaterials?.length) await Promise.all(d.rawMaterials.map(item => sb.insert('production_raw_materials', { production_id: row.id, item_id: item.itemId, item_name: item.itemName || '', unit: item.unit, qty: Number(item.qty), avail_qty: Number(item.availQty) || 0 })));
     if (d.outputs?.length) await Promise.all(d.outputs.map(item => sb.insert('production_outputs', { production_id: row.id, item_id: item.itemId || null, item_name: item.itemName || '', item_code: item.code || null, category: item.category || null, unit: item.unit, cost_price: Number(item.costPrice) || 0, qty: Number(item.qty) })));
     this._cache = null; await this.loadAll(d.whId); return mapPRO(row);
@@ -1788,37 +1817,67 @@ const dmgSvc = {
 
 
 // ════════════════════════════════════════
-//  FILL · TANK · TANK PRODUCTION — data layer
-//  All stock movements run inside Postgres functions (one transaction
-//  each): solopos_fill_tank_production.sql
+//  SHARED HELPERS (formatting only — no data access)
 // ════════════════════════════════════════
 const E = React.createElement;
 const PREFILL = { tankId: null, fillSrcTank: null };   // hand-off between pages (e.g. Tank → New Production)
 const FILL_STATUSES  = ['Draft','Pending','Approved','Completed','Cancelled'];
 const TANK_STATUSES  = ['Available','Processing','Completed','Maintenance','Disabled'];
 const TPROD_STATUSES = ['Draft','In Progress','Completed','Cancelled'];
-const TANK_UNITS     = ['LTR','ML','KG','MT','DRM','NOS'];
+const TANK_UNITS     = ['MT','LTR','KG','ML','DRM','NOS'];
 const TANK_STATUS_LABEL = { Processing: 'Running / Processing' };
 const statusColor = s => ({ 'Pending Approval':'amber', Draft:'gray', Pending:'amber', Approved:'blue', Completed:'green', Cancelled:'red',
-  'In Progress':'blue', Available:'green', Processing:'amber', Maintenance:'purple', Disabled:'gray' }[s] || 'gray');
+  'In Progress':'blue', Available:'green', Processing:'amber', Maintenance:'purple', Disabled:'gray', Active:'green', Inactive:'gray' }[s] || 'gray');
 const isUuid = v => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || ''));
 
-// ── quantity + duration formatting ──
 const qtyFmt = n => Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 3 });
 const durParts = sec => { sec = Math.max(0, Math.round(Number(sec) || 0)); return { h: Math.floor(sec / 3600), m: Math.floor((sec % 3600) / 60), s: sec % 60 }; };
 const pad2 = n => String(n).padStart(2, '0');
-// "02h 35m"  (seconds shown only when entered)
 const fmtDur = sec => { if (sec == null || sec === '') return '\u2014'; const { h, m, s } = durParts(sec); return pad2(h) + 'h ' + pad2(m) + 'm' + (s ? ' ' + pad2(s) + 's' : ''); };
-// "02:35:00"
 const fmtHMS = sec => { const { h, m, s } = durParts(sec); return pad2(h) + ':' + pad2(m) + ':' + pad2(s); };
-// difference between two HH:MM times, wrapping past midnight (a one-off calculation, not a timer)
 const timeDiffSec = (a, b) => { if (!a || !b) return 0; const [ah, am] = a.split(':').map(Number), [bh, bm] = b.split(':').map(Number); let d = (bh * 60 + bm) - (ah * 60 + am); if (d < 0) d += 1440; return d * 60; };
 const nowHM = () => { const d = new Date(); return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };
 const fmtTime = t => t ? String(t).slice(0, 5) : '';
+const downloadCSV = (name, headers, rows) => {
+  const esc = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const csv = [headers, ...rows].map(r => r.map(esc).join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+};
+const pagedSelect = async (table, query) => {
+  let all = [], from = 0; const size = 1000;
+  for (let i = 0; i < 40; i++) {
+    const rows = await sbFetch(`${table}${query ? '?' + query : ''}`, { headers: { 'Accept': 'application/json', 'Range': `${from}-${from + size - 1}` } }) || [];
+    all = all.concat(rows);
+    if (rows.length < size) break;
+    from += size;
+  }
+  return all;
+};
+const friendlyDbError = e => {
+  const m = String((e && e.message) || e || 'Something went wrong');
+  if (/relation .* does not exist|Could not find the (table|function)|schema cache/i.test(m)) return 'Production database not set up \u2014 run solopos_production_app.sql in Supabase, then refresh.';
+  if (/Failed to fetch|NetworkError|Load failed/i.test(m)) return 'Network problem \u2014 nothing was changed. Check your connection and try again.';
+  if (/violates foreign key constraint/i.test(m)) return 'This record is in use elsewhere, so it cannot be deleted. Set it to Inactive instead.';
+  if (/duplicate key value/i.test(m)) return 'That code already exists \u2014 choose a different one.';
+  return m;
+};
+const rpcCall = async (fn, body) => {
+  try { return await sbFetch('rpc/' + fn, { method: 'POST', body: JSON.stringify(body) }); }
+  catch (e) { throw new Error(friendlyDbError(e)); }
+};
 
-// ── row mappers ──
-const mapTank = r => r && ({ id: r.id, code: r.tank_code, name: r.name, whId: r.warehouse_id, location: r.location || '',
-  capacity: Number(r.capacity || 0), qty: Number(r.current_qty || 0), unit: r.unit || 'LTR', itemId: r.item_id,
+// ════════════════════════════════════════
+//  PRODUCTION APP — DATA LAYER
+//  Reads and writes ONLY prod_* tables and prod_* functions.
+//  (solopos_production_app.sql)  Nothing here touches Store data.
+// ════════════════════════════════════════
+const mapProdUser = r => r && ({ id: r.id, username: r.username, name: r.name, role: r.role, status: r.status || 'Active', pages: r.pages || 'dashboard', canApprove: !!(r.can_approve), createdAt: r.created_at });
+const mapProdCat  = r => r && ({ id: r.id, name: r.name, color: r.color || '#2563eb', isFinal: !!r.is_final, sort: r.sort_order });
+const mapProdItem = r => r && ({ id: r.id, code: r.code, name: r.name, categoryId: r.category_id, unit: r.unit || 'MT', capacity: Number(r.capacity || 0), minStock: Number(r.min_stock || 0), description: r.description || '', status: r.status || 'Active', createdAt: r.created_at });
+const mapProdLoc  = r => r && ({ id: r.id, code: r.code, name: r.name, description: r.description || '', status: r.status || 'Active' });
+const mapTank = r => r && ({ id: r.id, code: r.tank_code, name: r.name, locId: r.location_id, location: r.location || '',
+  capacity: Number(r.capacity || 0), qty: Number(r.current_qty || 0), unit: r.unit || 'MT', itemId: r.item_id,
   product: r.product_name || '', status: r.status, description: r.description || '', createdBy: r.created_by, createdAt: r.created_at });
 const mapFill = r => r && ({ id: r.id, no: r.fill_number, srcType: r.source_type, srcId: r.source_id, dstType: r.destination_type, dstId: r.destination_id,
   itemId: r.item_id, product: r.product_name || '', unit: r.unit || '', availQty: Number(r.available_qty || 0), qty: Number(r.quantity || 0),
@@ -1833,199 +1892,166 @@ const mapTProd = r => r && ({ id: r.id, no: r.production_number, tankId: r.tank_
   runSeconds: r.actual_run_seconds == null ? null : Number(r.actual_run_seconds), runTime: r.actual_run_time,
   status: r.status, notes: r.notes || '', completedBy: r.completed_by, completedAt: r.completed_at, cancelReason: r.cancel_reason,
   createdBy: r.created_by, createdAt: r.created_at });
+const mapMove = r => r && ({ id: r.id, no: r.move_no, type: r.move_type, date: r.move_date, time: r.move_time, locType: r.location_type, locId: r.location_id,
+  itemId: r.item_id, product: r.product_name || '', unit: r.unit || '', qty: Number(r.qty || 0), party: r.party || '', reference: r.reference || '', remarks: r.remarks || '', createdBy: r.created_by, createdAt: r.created_at });
 const mapLedger = r => r && ({ id: r.id, at: r.txn_at, type: r.txn_type, refType: r.ref_type, refNo: r.ref_no, locType: r.location_type, locId: r.location_id,
   locName: r.location_name, product: r.product_name, unit: r.unit, dir: r.direction, qty: Number(r.qty), balance: r.balance_after == null ? null : Number(r.balance_after),
   user: r.user_name, notes: r.notes });
 const mapAudit = r => r && ({ id: r.id, action: r.action, from: r.from_status, to: r.to_status, user: r.user_name, at: r.created_at, details: r.details });
 
-// ── paged GET (PostgREST caps a single response, so page through) ──
-const pagedSelect = async (table, query) => {
-  let all = [], from = 0; const size = 1000;
-  for (let i = 0; i < 40; i++) {
-    const rows = await sbFetch(`${table}${query ? '?' + query : ''}`, { headers: { 'Accept': 'application/json', 'Range': `${from}-${from + size - 1}` } }) || [];
-    all = all.concat(rows);
-    if (rows.length < size) break;
-    from += size;
-  }
-  return all;
-};
-const friendlyDbError = e => {
-  const m = String((e && e.message) || e || 'Something went wrong');
-  if (/relation .* does not exist|Could not find the (table|function)|schema cache/i.test(m)) return 'Database setup missing \u2014 run solopos_fill_tank_production.sql in Supabase, then refresh.';
-  if (/Failed to fetch|NetworkError|Load failed/i.test(m)) return 'Network problem \u2014 nothing was changed. Check your connection and try again.';
-  return m;
-};
+// generic cached loader for a prod_ table
 const _modSvc = (table, key, mapFn, order) => ({
   _cache: null, _err: null,
   async loadAll() {
-    try { const rows = await pagedSelect(table, order); this._cache = rows.map(mapFn); this._err = null; db.s(key, this._cache); }
-    catch (e) { this._err = friendlyDbError(e); this._cache = this._cache || db.g(key) || []; }
+    try { const rows = await pagedSelect(table, order); this._cache = rows.map(mapFn); this._err = null; }
+    catch (e) { this._err = friendlyDbError(e); this._cache = this._cache || []; }
     return this._cache;
   },
-  getAll() { return this._cache || db.g(key) || []; },
+  getAll() { return this._cache || []; },
   getById(id) { return this.getAll().find(x => x.id === id); },
 });
-const rpcCall = async (fn, body) => {
-  try { return await sbFetch('rpc/' + fn, { method: 'POST', body: JSON.stringify(body) }); }
-  catch (e) { throw new Error(friendlyDbError(e)); }
-};
+// simple master-data CRUD on a prod_ table
+const _crudSvc = (table, key, mapFn, order, toRow) => Object.assign(_modSvc(table, key, mapFn, order), {
+  async create(d) { try { const r = await sb.insert(table, toRow(d)); await this.loadAll(); return mapFn(r); } catch (e) { throw new Error(friendlyDbError(e)); } },
+  async update(id, d) { try { const r = await sb.update(table, `id=eq.${id}`, toRow(d, true)); await this.loadAll(); return mapFn(r); } catch (e) { throw new Error(friendlyDbError(e)); } },
+  async remove(id) { try { await sb.delete(table, `id=eq.${id}`); await this.loadAll(); } catch (e) { throw new Error(friendlyDbError(e)); } },
+});
 
-// After stock moved, refresh the store caches the rest of the app reads from.
-const refreshStores = async (whIds) => {
-  const ids = [...new Set((whIds || []).filter(Boolean))];
-  for (const w of ids) { try { await itemSvc.loadAll(w); await stockSvc.loadAll(w); } catch (e) { console.warn('refreshStores', e.message); } }
-};
-
-// ── product catalogue (distinct by code, light columns only) ──
-const catalogSvc = {
-  _cache: null,
-  async load(force) {
-    if (this._cache && !force) return this._cache;
-    try {
-      const rows = await pagedSelect('items', 'select=id,code,name,unit,category&status=eq.Active&order=name.asc');
-      const seen = new Map();
-      rows.forEach(r => { const k = r.code || r.name; if (!seen.has(k)) seen.set(k, { id: r.id, code: r.code, name: r.name, unit: r.unit, category: r.category }); });
-      this._cache = [...seen.values()];
-    } catch (e) { console.warn('catalogSvc', e.message); this._cache = this._cache || []; }
-    return this._cache;
+// ── users / login (server-side password check) ──
+const prodUserSvc = Object.assign(_modSvc('prod_users', 'pusers', mapProdUser, 'select=id,username,name,role,status,pages,can_approve,created_at&order=username.asc'), {
+  session() { try { return JSON.parse(localStorage.getItem('gs_prod_session') || 'null'); } catch { return null; } },
+  async login(un, pw) {
+    const r = await rpcCall('prod_login', { p_username: un, p_password: pw });
+    if (!r) return null;
+    const u = mapProdUser(r); try { localStorage.setItem('gs_prod_session', JSON.stringify(u)); } catch {}
+    return u;
   },
-  get() { return this._cache || []; },
+  logout() { try { localStorage.removeItem('gs_prod_session'); } catch {} },
+  async save(d) {
+    const r = await rpcCall('prod_user_save', { p: { id: d.id || null, username: d.username, name: d.name, password: d.password || null, role: d.role, status: d.status, pages: d.pages, can_approve: !!d.canApprove } });
+    await this.loadAll(); return mapProdUser(r);
+  },
+});
+
+// ── masters ──
+const prodCatSvc = Object.assign(_crudSvc('prod_categories', 'pcats', mapProdCat, 'order=sort_order.asc,name.asc', (d) => ({ id: d.id, name: d.name, color: d.color || '#2563eb', is_final: !!d.isFinal, sort_order: Number(d.sort) || 100 })), {
+  async update(id, d) { try { const r = await sb.update('prod_categories', `id=eq.${id}`, { name: d.name, color: d.color || '#2563eb', is_final: !!d.isFinal }); await this.loadAll(); return mapProdCat(r); } catch (e) { throw new Error(friendlyDbError(e)); } },
+  async remove(id) { try { await sb.delete('prod_categories', `id=eq.${id}`); await this.loadAll(); } catch (e) { throw new Error(friendlyDbError(e)); } },
+});
+const prodItemSvc = _crudSvc('prod_items', 'pitems', mapProdItem, 'order=name.asc', d => ({ code: String(d.code || '').trim().toUpperCase(), name: String(d.name || '').trim(), category_id: d.categoryId || null, unit: d.unit || 'MT',
+  capacity: Number(d.capacity) || 0, min_stock: Number(d.minStock) || 0, description: d.description || null, status: d.status || 'Active' }));
+const prodLocSvc = _crudSvc('prod_locations', 'plocs', mapProdLoc, 'order=name.asc', d => ({ code: String(d.code || '').trim().toUpperCase(), name: String(d.name || '').trim(), description: d.description || null, status: d.status || 'Active' }));
+// the product list used by every product picker in the Production app (its OWN items)
+const catalogSvc = { get() { return prodItemSvc.getAll().filter(i => i.status === 'Active'); }, async load() { await prodItemSvc.loadAll(); return this.get(); } };
+
+// ── stock held in locations ──
+const prodStockSvc = {
+  _rows: [], _err: null,
+  async loadAll() { try { this._rows = (await pagedSelect('prod_stock', 'select=item_id,location_id,qty')).map(r => ({ itemId: r.item_id, locId: r.location_id, qty: Number(r.qty || 0) })); this._err = null; } catch (e) { this._err = friendlyDbError(e); } return this._rows; },
+  all() { return this._rows; },
+  getQty(itemId, locId) { const r = this._rows.find(x => x.itemId === itemId && x.locId === locId); return r ? r.qty : 0; },
+  itemsAt(locId) { return this._rows.filter(r => r.locId === locId && r.qty > 0).map(r => { const it = prodItemSvc.getById(r.itemId); return it ? { ...it, qty: r.qty } : null; }).filter(Boolean).sort((a, b) => a.name.localeCompare(b.name)); },
+  async adjust(locId, itemId, newQty, reason, who) { await rpcCall('prod_loc_adjust', { p_loc: locId, p_item: itemId, p_new_qty: Number(newQty), p_user: who || null, p_reason: reason || null }); await this.loadAll(); },
 };
 
 // ── TANKS ──
-const tankSvc = Object.assign(_modSvc('tanks', 'tanks', mapTank, 'order=tank_code.asc'), {
+const tankSvc = Object.assign(_modSvc('prod_tanks', 'ptanks', mapTank, 'order=tank_code.asc'), {
   async create(d) {
-    const r = await rpcCall('tank_create', { p: { tank_code: d.code, name: d.name, warehouse_id: d.whId || null, location: d.location || null,
-      capacity: Number(d.capacity) || 0, unit: d.unit || 'LTR', status: d.status || 'Available', description: d.description || null,
+    const r = await rpcCall('prod_tank_create', { p: { tank_code: d.code, name: d.name, location_id: d.locId || null, location: d.location || null,
+      capacity: Number(d.capacity) || 0, unit: d.unit || 'MT', status: d.status || 'Available', description: d.description || null,
       item_id: d.itemId || null, opening_qty: Number(d.openingQty) || 0, user: d.user } });
     await this.loadAll(); return mapTank(r);
   },
   async update(id, d) {
     try {
-      const row = await sb.update('tanks', `id=eq.${id}`, { name: d.name, warehouse_id: d.whId || null, location: d.location || null,
+      const row = await sb.update('prod_tanks', `id=eq.${id}`, { name: d.name, location_id: d.locId || null, location: d.location || null,
         capacity: Number(d.capacity) || 0, unit: d.unit, status: d.status, description: d.description || null });
       await this.loadAll(); return mapTank(row);
-    } catch (e) { throw new Error(/tank_within_capacity/.test(e.message) ? 'Capacity cannot be lower than the quantity currently in the tank.' : friendlyDbError(e)); }
+    } catch (e) { throw new Error(/prod_tank_within_capacity/.test(e.message) ? 'Capacity cannot be lower than the quantity currently in the tank.' : friendlyDbError(e)); }
   },
-  async setStatus(id, status) { try { await sb.update('tanks', `id=eq.${id}`, { status }); await this.loadAll(); } catch (e) { throw new Error(friendlyDbError(e)); } },
+  async setStatus(id, status) { try { await sb.update('prod_tanks', `id=eq.${id}`, { status }); await this.loadAll(); } catch (e) { throw new Error(friendlyDbError(e)); } },
   async adjust(id, newQty, itemId, reason, userName) {
-    await rpcCall('tank_adjust', { p_tank: id, p_new_qty: Number(newQty), p_item: itemId || null, p_user: userName || null, p_reason: reason || null });
+    await rpcCall('prod_tank_adjust', { p_tank: id, p_new_qty: Number(newQty), p_item: itemId || null, p_user: userName || null, p_reason: reason || null });
     await this.loadAll();
   },
-  async remove(id) { try { await sb.delete('tanks', `id=eq.${id}`); await this.loadAll(); } catch (e) { throw new Error(friendlyDbError(e)); } },
+  async remove(id) { try { await sb.delete('prod_tanks', `id=eq.${id}`); await this.loadAll(); } catch (e) { throw new Error(friendlyDbError(e)); } },
 });
 
 // ── FILLS ──
-const fillSvc = Object.assign(_modSvc('fills', 'fills', mapFill, 'order=created_at.desc'), {
+const fillSvc = Object.assign(_modSvc('prod_fills', 'pfills', mapFill, 'order=created_at.desc'), {
   async create(d) {
-    const r = await rpcCall('fill_create', { p: { client_token: d.token, source_type: d.srcType, source_id: d.srcId, destination_type: d.dstType,
+    const r = await rpcCall('prod_fill_create', { p: { client_token: d.token, source_type: d.srcType, source_id: d.srcId, destination_type: d.dstType,
       destination_id: d.dstId, item_id: d.itemId, quantity: Number(d.qty), fill_date: d.date, fill_time: d.time || null,
       operator_id: isUuid(d.operatorId) ? d.operatorId : null, operator_name: d.operator || null, status: d.status, notes: d.notes || null,
       prefix: 'FIL', user: d.user } });
     await this.loadAll(); return mapFill(r);
   },
-  async setStatus(id, status, user, reason) { await rpcCall('fill_set_status', { p_id: id, p_status: status, p_user: user, p_reason: reason || null }); await this.loadAll(); },
+  async setStatus(id, status, user, reason) { await rpcCall('prod_fill_set_status', { p_id: id, p_status: status, p_user: user, p_reason: reason || null }); await this.loadAll(); },
   async complete(id, user) {
-    const f = this.getById(id);
-    await rpcCall('fill_complete', { p_id: id, p_user: user });
-    await Promise.all([this.loadAll(), tankSvc.loadAll()]);
-    const wh = []; if (f) { if (f.srcType === 'store') wh.push(f.srcId); if (f.dstType === 'store') wh.push(f.dstId); }
-    await refreshStores(wh);
+    await rpcCall('prod_fill_complete', { p_id: id, p_user: user });
+    await Promise.all([this.loadAll(), tankSvc.loadAll(), prodStockSvc.loadAll()]);
   },
   todayCount() { return this.getAll().filter(f => f.date === today() && f.status !== 'Cancelled').length; },
 });
 
-// ── TANK PRODUCTION ──
-const tprodSvc = Object.assign(_modSvc('tank_productions', 'tprod', mapTProd, 'order=created_at.desc'), {
+// ── PRODUCTION RUNS ──
+const tprodSvc = Object.assign(_modSvc('prod_runs', 'pruns', mapTProd, 'order=created_at.desc'), {
   async create(d) {
-    const r = await rpcCall('tprod_create', { p: { client_token: d.token, tank_id: d.tankId, input_quantity: Number(d.inQty), planned_output_quantity: Number(d.plannedQty) || 0,
+    const r = await rpcCall('prod_run_create', { p: { client_token: d.token, tank_id: d.tankId, input_quantity: Number(d.inQty), planned_output_quantity: Number(d.plannedQty) || 0,
       output_item_id: d.outItemId || null, output_dest_type: d.outDestType || 'tank', output_dest_id: d.outDestId || null,
       operator_id: isUuid(d.operatorId) ? d.operatorId : null, operator_name: d.operator || null, production_date: d.date,
       start_time: d.startTime || null, status: d.status, notes: d.notes || null, prefix: 'TPR', user: d.user } });
     await Promise.all([this.loadAll(), tankSvc.loadAll()]); return mapTProd(r);
   },
-  async start(id, user) { await rpcCall('tprod_start', { p_id: id, p_user: user }); await Promise.all([this.loadAll(), tankSvc.loadAll()]); },
+  async start(id, user) { await rpcCall('prod_run_start', { p_id: id, p_user: user }); await Promise.all([this.loadAll(), tankSvc.loadAll()]); },
   async complete(id, d) {
-    const p = this.getById(id);
-    await rpcCall('tprod_complete', { p_id: id, p: { actual_output_quantity: Number(d.actualQty), run_hours: Number(d.h) || 0, run_minutes: Number(d.m) || 0, run_seconds: Number(d.s) || 0,
+    await rpcCall('prod_run_complete', { p_id: id, p: { actual_output_quantity: Number(d.actualQty), run_hours: Number(d.h) || 0, run_minutes: Number(d.m) || 0, run_seconds: Number(d.s) || 0,
       start_time: d.startTime || null, completion_time: d.endTime || null, output_item_id: d.outItemId || null, output_dest_type: d.outDestType,
       output_dest_id: d.outDestId || null, production_date: d.date || null, notes: d.notes || null, user: d.user } });
-    await Promise.all([this.loadAll(), tankSvc.loadAll()]);
-    if (d.outDestType === 'store' && d.outDestId) await refreshStores([d.outDestId]);
+    await Promise.all([this.loadAll(), tankSvc.loadAll(), prodStockSvc.loadAll()]);
   },
-  async cancel(id, user, reason) { await rpcCall('tprod_cancel', { p_id: id, p_user: user, p_reason: reason || null }); await Promise.all([this.loadAll(), tankSvc.loadAll()]); },
+  async cancel(id, user, reason) { await rpcCall('prod_run_cancel', { p_id: id, p_user: user, p_reason: reason || null }); await Promise.all([this.loadAll(), tankSvc.loadAll()]); },
 });
 
-// ── Production vouchers (Production module / Approvals): line totals for dashboard + reports ──
-const proLinesSvc = {
-  _in: {}, _out: {}, _unit: {}, _inName: {}, _inCount: {}, _rows: {},
-  async load() {
-    try {
-      const [raw, out] = await Promise.all([
-        pagedSelect('production_raw_materials', 'select=production_id,qty,unit,item_name'),
-        pagedSelect('production_outputs', 'select=production_id,qty,unit,item_name')]);
-      this._in = {}; this._out = {}; this._unit = {}; this._inName = {}; this._inCount = {}; this._rows = {};
-      raw.forEach(r => { const k = r.production_id; (this._rows[k] = this._rows[k] || []).push({ name: r.item_name, qty: Number(r.qty || 0), unit: r.unit }); this._in[k] = (this._in[k] || 0) + Number(r.qty || 0); this._inCount[k] = (this._inCount[k] || 0) + 1; if (!this._inName[k]) this._inName[k] = r.item_name; if (!this._unit[k]) this._unit[k] = r.unit; });
-      out.forEach(r => { const k = r.production_id; this._out[k] = (this._out[k] || 0) + Number(r.qty || 0); if (r.unit) this._unit[k] = r.unit; });
-    } catch (e) { console.warn('proLinesSvc', e.message); }
+// ── RECEIPTS / DISPATCH ──
+const moveSvc = Object.assign(_modSvc('prod_moves', 'pmoves', mapMove, 'order=created_at.desc'), {
+  async create(d) {
+    const r = await rpcCall('prod_move_create', { p: { client_token: d.token, move_type: d.type, location_type: d.locType, location_id: d.locId, item_id: d.itemId, qty: Number(d.qty),
+      move_date: d.date, move_time: d.time || null, party: d.party || null, reference: d.reference || null, remarks: d.remarks || null, user: d.user } });
+    await Promise.all([this.loadAll(), tankSvc.loadAll(), prodStockSvc.loadAll()]); return mapMove(r);
   },
-};
-// ONE list of production activity: Tank Production runs + Production vouchers (Approved = Completed).
-// Dashboard, Production Reports and the Tank page all read this, so nothing is missed.
-const unifiedRuns = (user, isSA) => {
-  const scoped = !!(user && !isSA && user.whId);
-  const tIds = new Set(tanksFor(user, isSA).map(t => t.id));
-  const L = proLinesSvc;
-  const tank = tprodSvc.getAll().filter(p => !scoped || tIds.has(p.tankId)).map(p => ({ ...p, source: 'tank', rawLines: p.inQty ? [{ name: p.inProduct, qty: p.inQty, unit: p.unit }] : [] }));
-  const vouch = proSvc.getAll().filter(v => (v.status === 'Approved' || v.status === 'Pending Approval') && (!scoped || v.whId === user.whId)).map(v => {
-    const approved = v.status === 'Approved', out = L._out[v.id] || 0, n = L._inCount[v.id] || 0;
-    return { id: 'v:' + v.id, no: v.proNo, source: 'voucher', tankId: v.tankId || null, inItemId: null,
-      inProduct: n ? (L._inName[v.id] || '') + (n > 1 ? ' +' + (n - 1) + ' more' : '') : '', inQty: L._in[v.id] || 0,
-      outProduct: v.productName || '', plannedQty: out, actualQty: approved ? out : null, unit: L._unit[v.id] || '',
-      operator: v.submittedBy || '', date: v.date, startTime: v.startTime, endTime: v.endTime, runSeconds: v.runSeconds,
-      status: approved ? 'Completed' : 'Pending Approval', createdAt: v.createdAt, completedAt: v.approvedAt, notes: v.remarks || '', rawLines: L._rows[v.id] || [] };
-  });
-  return [...tank, ...vouch];
-};
+});
 
 // ── ledger + audit (read side) ──
 const ledgerSvc = {
-  async forRef(refType, refId) { try { return (await sb.select('stock_ledger', `ref_type=eq.${refType}&ref_id=eq.${refId}`, 'order=txn_at.asc')).map(mapLedger); } catch { return []; } },
-  async forLocation(type, id, limit = 40) { try { return (await sb.select('stock_ledger', `location_type=eq.${type}&location_id=eq.${id}`, `order=txn_at.desc&limit=${limit}`)).map(mapLedger); } catch { return []; } },
+  async forRef(refType, refId) { try { return (await sb.select('prod_ledger', `ref_type=eq.${refType}&ref_id=eq.${refId}`, 'order=txn_at.asc')).map(mapLedger); } catch { return []; } },
+  async forLocation(type, id, limit = 40) { try { return (await sb.select('prod_ledger', `location_type=eq.${type}&location_id=eq.${id}`, `order=txn_at.desc&limit=${limit}`)).map(mapLedger); } catch { return []; } },
+  async recent(limit = 300) { try { return (await sb.select('prod_ledger', '', `order=txn_at.desc&limit=${limit}`)).map(mapLedger); } catch { return []; } },
 };
 const auditSvc = {
-  async forEntity(entity, id) { try { return (await sb.select('module_audit_log', `entity=eq.${entity}&entity_id=eq.${id}`, 'order=created_at.asc')).map(mapAudit); } catch { return []; } },
+  async forEntity(entity, id) { try { return (await sb.select('prod_audit', `entity=eq.${entity}&entity_id=eq.${id}`, 'order=created_at.asc')).map(mapAudit); } catch { return []; } },
 };
 
-// ── scoping: non-admins only see tanks of their warehouse (or unassigned tanks) ──
-const tanksFor = (user, isSA) => { const all = tankSvc.getAll(); return (isSA || !user || !user.whId) ? all : all.filter(t => !t.whId || t.whId === user.whId); };
-const inScopeFill = (f, user, isSA) => {
-  if (isSA || !user || !user.whId) return true;
-  const ids = new Set(tanksFor(user, isSA).map(t => t.id));
-  const hit = (type, id) => type === 'store' ? id === user.whId : ids.has(id);
-  return hit(f.srcType, f.srcId) || hit(f.dstType, f.dstId);
-};
+// ── helpers used by the screens ──
+const tanksFor = () => tankSvc.getAll();
+const inScopeFill = () => true;
+const unifiedRuns = () => tprodSvc.getAll().map(p => ({ ...p, source: 'tank', rawLines: p.inQty ? [{ name: p.inProduct, qty: p.inQty, unit: p.unit }] : [] }));
 const locLabel = (type, id) => {
-  if (type === 'store') { const w = whSvc.getById(id); return w ? w.name : 'Store'; }
+  if (type === 'location') { const l = prodLocSvc.getById(id); return l ? l.name : 'Location'; }
   const t = tankSvc.getById(id); return t ? t.name + ' (' + t.code + ')' : 'Tank';
 };
-const canApproveOps = (user, isSA) => !!(isSA || (user && (user.canApproveGRV || user.canApproveGIV)));
+const locShort = (type, id) => type === 'location' ? ((prodLocSvc.getById(id) || {}).name || 'Location') : ((tankSvc.getById(id) || {}).name || 'Tank');
+const canApproveOps = (user, isSA) => !!(isSA || (user && (user.canApprove || user.role === 'Manager')));
 const canManageTanks = (user, isSA) => !!(isSA || (user && user.role === 'Manager'));
-const downloadCSV = (name, headers, rows) => {
-  const esc = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-  const csv = [headers, ...rows].map(r => r.map(esc).join(',')).join('\n');
-  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }));
-  a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-};
 
 
 // ════════════════════════════════════════
 //  CONTEXT
 // ════════════════════════════════════════
 const Ctx=createContext(null);
-function Provider({children}){
+function Provider({children,onSwitchApp}){
   const [user,setUser]=useState(null);
-  const [page,setPage]=useState('dashboard');
+  const [page,setPage]=useState(()=>{const h=parseAppHash();return h&&h.app==='store'?h.page:'dashboard';});
   const [toasts,setToasts]=useState([]);
   const [modal,setModal]=useState(null);
   const [sideOpen,setSideOpen]=useState(false);
@@ -2044,7 +2070,6 @@ function Provider({children}){
     stockSvc._cache = null;
     grvSvc._cache = null; givSvc._cache = null; trnSvc._cache = null;
     conSvc._cache = null; proSvc._cache = null; mrSvc._cache = null; dmgSvc._cache = null;
-    tankSvc._cache = null; fillSvc._cache = null; tprodSvc._cache = null;
 
     // Defer ALL Supabase loading — don't block the UI thread at all
     setTimeout(()=>{
@@ -2065,7 +2090,6 @@ function Provider({children}){
           // Transactions — completely background
           [grvSvc,givSvc,trnSvc,conSvc,proSvc,mrSvc,dmgSvc]
             .forEach(svc=>svc.loadAll(whId2).catch(()=>{}));
-          [tankSvc,fillSvc,tprodSvc].forEach(svc=>svc.loadAll().catch(()=>{}));
         } catch(e){ console.warn('Background load:', e.message); }
       })();
     }, 100); // 100ms delay — page renders fully before any network calls
@@ -2076,11 +2100,12 @@ function Provider({children}){
     else{dim.classList.remove('show');dim.onclick=null;}
   },[sideOpen]);
 
+  useEffect(()=>{const h=()=>{const x=parseAppHash();if(x&&x.app==='store')setPage(x.page);};window.addEventListener('hashchange',h);return()=>window.removeEventListener('hashchange',h);},[]);
   const toast=useCallback((msg,type='info')=>{
     const id=uid();setToasts(t=>[...t,{id,msg,type}]);
     setTimeout(()=>setToasts(t=>t.filter(x=>x.id!==id)),3000);
   },[]);
-  const nav=useCallback((p)=>{setPage(p);setDrilldown(null);setSideOpen(false);},[]);
+  const nav=useCallback((p)=>{setPage(p);setDrilldown(null);setSideOpen(false);writeAppHash('store',p);},[]);
   const reload=useCallback(async()=>{
     try {
       const whId2=userSvc.session()?.role==='Super Admin'?null:userSvc.session()?.whId||null;
@@ -2091,13 +2116,13 @@ function Provider({children}){
         grvSvc.loadAll(whId2), givSvc.loadAll(whId2),
         trnSvc.loadAll(whId2), conSvc.loadAll(whId2),
         proSvc.loadAll(whId2), mrSvc.loadAll(whId2), dmgSvc.loadAll(whId2),
-        tankSvc.loadAll(), fillSvc.loadAll(), tprodSvc.loadAll(),
       ]);
     } catch(e) { console.warn('Reload failed:', e.message); }
     setTick(t=>t+1);
   },[]);
   const login=useCallback((un,pw)=>{const u=userSvc.login(un,pw);if(u){setUser(u);return true;}return false;},[]);
   const logout=useCallback(()=>{userSvc.logout();setUser(null);},[]);
+  const switchApp=useCallback(()=>{userSvc.logout();setUser(null);onSwitchApp&&onSwitchApp();},[onSwitchApp]);
 
   const isSA=user?.role==='Super Admin';
   const whId=isSA?null:(user?.whId||null);
@@ -2109,7 +2134,7 @@ function Provider({children}){
     React.createElement('div',{style:{color:'rgba(255,255,255,.5)',fontSize:12,marginTop:8}},'Loading...')
   );
 
-  return React.createElement(Ctx.Provider,{value:{user,setUser,page,nav,toasts,toast,modal,setModal,login,logout,sideOpen,setSideOpen,reload,tick,whId,isSA,drilldown,setDrilldown}},children);
+  return React.createElement(Ctx.Provider,{value:{user,setUser,page,nav,toasts,toast,modal,setModal,login,logout,switchApp,app:'store',appLabel:'STORE',sideOpen,setSideOpen,reload,tick,whId,isSA,drilldown,setDrilldown}},children);
 }
 const useCtx=()=>useContext(Ctx);
 
@@ -2223,8 +2248,8 @@ function WhBadge({whId}){
 //  AUTH
 // ════════════════════════════════════════
 function Auth(){
-  const {login,toast}=useCtx();
-  const sett=settSvc.get();
+  const {login,toast,brand,switchApp}=useCtx();
+  const sett=brand?{companyName:brand.name}:settSvc.get();
   const [un,setUn]=useState('');
   const [pw,setPw]=useState('');
   const [err,setErr]=useState('');
@@ -2233,7 +2258,7 @@ function Auth(){
   const go=async()=>{
     setLoading(true);setErr('');
     await new Promise(r=>setTimeout(r,350));
-    if(!login(un,pw))setErr('Invalid username or password');
+    if(!(await login(un,pw)))setErr('Invalid username or password');
     else toast('Login successful','success');
     setLoading(false);
   };
@@ -2242,10 +2267,10 @@ function Auth(){
       React.createElement('div',{className:'auth-brand'},
         React.createElement('img',{src:APP_LOGO,alt:'SOLOPOS',style:{width:80,height:80,borderRadius:16,marginBottom:12,boxShadow:'0 4px 24px rgba(0,0,0,.3)'}}),
         React.createElement('div',{className:'auth-brand-name'},sett.companyName||''),
-        React.createElement('div',{className:'auth-brand-sub'},'Multi-Warehouse IMS')
+        React.createElement('div',{className:'auth-brand-sub'},brand?brand.sub:'Multi-Warehouse IMS')
       ),
       React.createElement('div',{className:'auth-features'},
-        [['🏭','Multi-Warehouse — separate data per store'],['🔐','Role-based GRV & GIV approval'],['🔄','Stock transfer between warehouses'],['👑','Super Admin sees all warehouses'],['📊','Clickable dashboard — drill-down details'],].map(([i,t])=>
+        (brand?brand.features:[['🏭','Multi-Warehouse — separate data per store'],['🔐','Role-based GRV & GIV approval'],['🔄','Stock transfer between warehouses'],['👑','Super Admin sees all warehouses'],['📊','Clickable dashboard — drill-down details'],]).map(([i,t])=>
           React.createElement('div',{key:t,className:'auth-feat'},React.createElement('div',{className:'auth-feat-icon'},i),React.createElement('div',{className:'auth-feat-text'},t))
         )
       )
@@ -2253,7 +2278,8 @@ function Auth(){
     React.createElement('div',{className:'auth-right'},
       React.createElement('div',{className:'auth-box'},
         React.createElement('div',{className:'auth-h'},'Sign In'),
-        React.createElement('div',{className:'auth-sub'},'Sign in to SOLOPOS Inventory Management'),
+        React.createElement('div',{className:'auth-sub'},brand?'Sign in to SOLOPOS Production':'Sign in to SOLOPOS Inventory Management'),
+        React.createElement('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',margin:'0 0 12px',gap:8}},React.createElement('span',{className:'app-pill '+(brand?'app-pill-prod':'app-pill-store')},brand?'PRODUCTION APP':'STORE APP'),switchApp?React.createElement('a',{href:'#',onClick:e=>{e.preventDefault();switchApp();},style:{fontSize:12,color:'var(--blue)',fontWeight:600}},'\u2190 Change application'):null),
 
         err&&React.createElement('div',{className:'alert alert-red',style:{marginBottom:14}},React.createElement(Ic,{n:'alert',s:13}),err),
         React.createElement('div',{className:'fg'},React.createElement('label',{className:'flbl'},'Username'),React.createElement('input',{className:'fi',value:un,onChange:e=>setUn(e.target.value),placeholder:'Enter username'})),
@@ -2268,7 +2294,7 @@ function Auth(){
 //  SIDEBAR
 // ════════════════════════════════════════
 function Sidebar(){
-  const {user,page,nav,logout,sideOpen,setSideOpen,whId,isSA}=useCtx();
+  const {user,page,nav,logout,switchApp,setModal,toast,sideOpen,setSideOpen,whId,isSA}=useCtx();
   const sett=settSvc.get();
   const wh=whId?whSvc.getById(whId):null;
   const low=stockSvc.getLow(whId).length;
@@ -2281,7 +2307,6 @@ function Sidebar(){
   const pendingPRO=proSvc.getPending(whId).length;
   const pendingMR=mrSvc.getPending(whId).length;
   const pendingDMG=dmgSvc.getPending(whId).length;
-  const pendingFill=canApprove?fillSvc.getAll().filter(f=>f.status==='Pending').length:0;
 
   const navItems=[
     {id:'dashboard',icon:'dashboard',label:'Dashboard'},
@@ -2295,21 +2320,15 @@ function Sidebar(){
     {id:'grn',icon:'grv',label:'Purchase (Goods Receipt)'},
     {id:'gin',icon:'giv',label:'GIN (Issue Note)'},
     {id:'transfer',icon:'transfer',label:'Stock Transfer'},
-    {id:'fill',icon:'fill',label:'Fill',dot:pendingFill},
     {id:'consumption',icon:'fire',label:'Consumption',dot:pendingCON},
     {id:'production',icon:'factory',label:'Production',dot:pendingPRO},
     {id:'materialrequest',icon:'clipboard',label:'Material Request',dot:pendingMR},
     {id:'damaged',icon:'alert',label:'Damaged Products',dot:pendingDMG},
     canApprove&&{id:'approvals',icon:'check',label:'Approvals',dot:pendingTotal},
-    {type:'section',label:'Tanks & Production'},
-    {id:'tanks',icon:'tank',label:'Tanks'},
-    {id:'tankproduction',icon:'factory',label:'Tank Production'},
     {type:'section',label:'Inventory'},
     {id:'stockview',icon:'stock',label:'Stock View',dot:low},
     {type:'section',label:'Reports & Admin'},
     {id:'reports',icon:'reports',label:'Reports'},
-    {id:'productionreports',icon:'reports',label:'Production Reports'},
-    {id:'fillreports',icon:'reports',label:'Fill Reports'},
     isSA&&{id:'users',icon:'users',label:'User Management'},
     {id:'settings',icon:'settings',label:'Settings'},
   ].filter(Boolean);
@@ -2365,6 +2384,7 @@ function Sidebar(){
             style:{color:'rgba(255,255,255,.4)'},
             onClick:()=>setModal(React.createElement(ChangePasswordModal,{user,onClose:()=>setModal(null),onSaved:()=>{setModal(null);toast('Password changed','success');}}))
           },React.createElement(Ic,{n:'key',s:15})),
+          React.createElement('div',{className:'s-logout',onClick:switchApp,title:'Switch application'},React.createElement(Ic,{n:'transfer',s:15})),
           React.createElement('div',{className:'s-logout',onClick:logout,title:'Logout'},React.createElement(Ic,{n:'logout',s:15}))
         )
       )
@@ -2538,7 +2558,6 @@ function Dashboard(){
         )
       ))
     ),
-    React.createElement(ProdTankOverview),
     // Low stock alert
     low.length>0&&React.createElement('div',{
       className:'alert alert-amber',
@@ -5615,8 +5634,6 @@ function Consumption(){
 // ════════════════════════════════════════
 function Production(){
   const {toast,reload,whId:_pWhId,isSA:_pSA,setModal,user:_pUser}=useCtx();
-  const [,_tkBump]=useState(0);
-  useEffect(()=>{tankSvc.loadAll().then(()=>_tkBump(n=>n+1));},[]);
   const [tab,setTab]=useState('list');
   const [viewPro,setViewPro]=useState(null);
   const [q,setQ]=useState('');
@@ -5631,7 +5648,7 @@ function Production(){
   const blankForm=()=>({
     proNo:`${sett.proPrefix||'PRO'}-${String((db.g('production')||[]).length+1).padStart(6,'0')}`,
     date:today(),batchNo:'',productName:'',remarks:'',whId:selWh,
-    tankId:'',startTime:'',endTime:'',runH:'',runM:'',runS:'',
+    startTime:'',endTime:'',runH:'',runM:'',runS:'',
     rawMaterials:[{itemId:'',itemName:'',unit:'NOS',availQty:0,qty:''}],
     outputs:[{itemId:'',itemName:'',code:'',category:'GEN',unit:'NOS',costPrice:'',qty:''}],
   });
@@ -5673,14 +5690,15 @@ function Production(){
     if(!validOut.length){toast('Add at least one output item to produce','error');return;}
     const runSec=(Number(form.runH)||0)*3600+(Number(form.runM)||0)*60+(Number(form.runS)||0);
     if((Number(form.runM)||0)>59||(Number(form.runS)||0)>59){toast('Minutes and seconds must be 59 or less','error');return;}
-    if(form.tankId&&runSec<=0){toast('Enter the Actual Run Time the production took in the tank','error');return;}
     for(const row of validRaw){
       if(Number(row.qty)>Number(row.availQty)){
         toast('Insufficient raw material: '+(allItems.find(i=>i.id===row.itemId)?.name||'-'),'error');return;
       }
     }
-    await proSvc.create({...form,rawMaterials:validRaw,outputs:validOut,whId:selWh,runSeconds:runSec});
-    toast('Production order submitted — Pending Approval','success');
+    try{
+      await proSvc.create({...form,rawMaterials:validRaw,outputs:validOut,whId:selWh,runSeconds:runSec});
+    }catch(e){toast('Could not save the production order: '+e.message,'error');return;}
+    toast(proSvc.runTimeNotSaved?'Order saved, but the run time could not be stored \u2014 run solopos_store_update.sql in Supabase':'Production order submitted \u2014 Pending Approval',proSvc.runTimeNotSaved?'warning':'success');
     reloadPros();setForm(blankForm());setTab('list');
   };
 
@@ -5709,7 +5727,7 @@ function Production(){
         React.createElement('div',{style:{textAlign:'right'}},React.createElement('div',{className:'voucher-no',style:{color:'var(--teal,#0d9488)'}},viewPro.proNo),React.createElement('div',{style:{fontSize:12,color:'var(--txt2)',marginTop:4}},fmtDate(viewPro.date)),React.createElement(WhBadge,{whId:viewPro.whId}))
       ),
       React.createElement('div',{className:'voucher-meta'},
-        [['Product / Batch',viewPro.productName||'-'],['Batch No.',viewPro.batchNo||'-'],['Date',fmtDate(viewPro.date)],['Remarks',viewPro.remarks||'-'],...((viewPro.tankId||viewPro.runSeconds!=null)?[['Tank',proTankLabel(viewPro)],['Actual Run Time',proRunLabel(viewPro)],['Started \u2192 Finished',proTimesLabel(viewPro)]]:[])]
+        [['Product / Batch',viewPro.productName||'-'],['Batch No.',viewPro.batchNo||'-'],['Date',fmtDate(viewPro.date)],['Remarks',viewPro.remarks||'-'],...((viewPro.runSeconds!=null)?[['Actual Run Time',proRunLabel(viewPro)],['Started \u2192 Finished',proTimesLabel(viewPro)]]:[])]
         .map(([l,v])=>React.createElement('div',{key:l,className:'voucher-field'},React.createElement('div',{className:'voucher-field-lbl'},l),React.createElement('div',{className:'voucher-field-val'},v)))
       ),
       // Raw Materials
@@ -5783,16 +5801,12 @@ function Production(){
         React.createElement('div',{className:'fg'},React.createElement('label',{className:'flbl'},'Batch No.'),React.createElement('input',{className:'fi',value:form.batchNo,onChange:e=>sf('batchNo',e.target.value),placeholder:'e.g. BATCH-001'})),
         React.createElement('div',{className:'fg'},React.createElement('label',{className:'flbl'},'Remarks'),React.createElement('input',{className:'fi',value:form.remarks,onChange:e=>sf('remarks',e.target.value)}))
       ),
-      React.createElement('div',{className:'frow3'},
-        React.createElement('div',{className:'fg'},React.createElement('label',{className:'flbl'},'Tank (optional)'),
-          React.createElement('select',{className:'fi',value:form.tankId,onChange:e=>sf('tankId',e.target.value)},
-            React.createElement('option',{value:''},'\u2014 No tank \u2014'),
-            tanksFor(_pUser,_pSA).filter(t=>t.status!=='Disabled').map(t=>React.createElement('option',{key:t.id,value:t.id},t.name+' ('+t.code+')'+(t.product?' \u00b7 '+t.product:''))))),
+      React.createElement('div',{className:'frow'},
         React.createElement('div',{className:'fg'},React.createElement('label',{className:'flbl'},'Started at (optional)'),React.createElement('input',{className:'fi',type:'time',value:form.startTime,onChange:e=>sf('startTime',e.target.value)})),
         React.createElement('div',{className:'fg'},React.createElement('label',{className:'flbl'},'Finished at (optional)'),React.createElement('input',{className:'fi',type:'time',value:form.endTime,onChange:e=>sf('endTime',e.target.value)}))
       ),
       React.createElement('div',{className:'fg'},
-        React.createElement('label',{className:'flbl'},'Actual Run Time'+(form.tankId?' *':'')+' \u2014 how long the production already took'),
+        React.createElement('label',{className:'flbl'},'Actual Run Time \u2014 how long the production already took (optional)'),
         React.createElement(DurInput,{h:form.runH,m:form.runM,s:form.runS,onChange:v=>setForm(p=>({...p,runH:v.h,runM:v.m,runS:v.s}))}),
         React.createElement('div',{style:{display:'flex',gap:10,alignItems:'center',marginTop:6,flexWrap:'wrap'}},
           ((Number(form.runH)||0)+(Number(form.runM)||0)+(Number(form.runS)||0))>0&&React.createElement('span',{style:{fontSize:12,fontWeight:700,color:'#7c3aed'}},'Will be saved as '+fmtDur((Number(form.runH)||0)*3600+(Number(form.runM)||0)*60+(Number(form.runS)||0))),
@@ -5899,18 +5913,17 @@ function Production(){
     React.createElement('div',{className:'tw'},
       React.createElement('table',null,
         React.createElement('thead',null,React.createElement('tr',null,
-          ['PRO No.','Date',_pSA&&'Warehouse','Product / Batch','Batch No.','Tank','Run Time','Raw Materials','Outputs','Status','Action'].filter(Boolean).map(h=>React.createElement('th',{key:h},h))
+          ['PRO No.','Date',_pSA&&'Warehouse','Product / Batch','Batch No.','Run Time','Raw Materials','Outputs','Status','Action'].filter(Boolean).map(h=>React.createElement('th',{key:h},h))
         )),
         React.createElement('tbody',null,
           filtered.length===0
-            ? React.createElement('tr',null,React.createElement('td',{colSpan:11},React.createElement('div',{className:'te'},'No production records yet.')))
+            ? React.createElement('tr',null,React.createElement('td',{colSpan:10},React.createElement('div',{className:'te'},'No production records yet.')))
             : filtered.map(v=>React.createElement('tr',{key:v.id,style:{cursor:'pointer'},onClick:()=>openView(v)},
               React.createElement('td',null,React.createElement('span',{style:{color:'#0d9488',fontWeight:700,fontFamily:'var(--mono)',fontSize:11}},v.proNo)),
               React.createElement('td',null,fmtDate(v.date)),
               _pSA&&React.createElement('td',null,React.createElement(WhBadge,{whId:v.whId})),
               React.createElement('td',null,React.createElement('strong',null,v.productName||'-')),
               React.createElement('td',null,v.batchNo||'-'),
-              React.createElement('td',null,v.tankId?proTankLabel(v):'-'),
               React.createElement('td',null,v.runSeconds==null?'-':React.createElement('strong',{style:{color:'#7c3aed'}},fmtDur(v.runSeconds))),
               React.createElement('td',null,React.createElement('span',{style:{color:'var(--red)',fontWeight:600}},'\u2212 ',String((v.rawMaterials||[]).length),' items')),
               React.createElement('td',null,React.createElement('span',{style:{color:'var(--green)',fontWeight:600}},'\u2191 ',String((v.outputs||[]).length),' items')),
@@ -6751,8 +6764,8 @@ function Users(){
   const reload=()=>setUsers(userSvc.getAll());
 
   const UForm=({initial,onSave,onClose})=>{
-    const MANAGER_PAGES='dashboard,items,racks,suppliers,categories,grn,gin,transfer,fill,tanks,tankproduction,consumption,production,materialrequest,damaged,approvals,stockview,reports,productionreports,fillreports';
-    const STORE_PAGES='dashboard,items,grn,gin,fill,tanks,tankproduction,consumption,materialrequest,damaged,stockview';
+    const MANAGER_PAGES='dashboard,items,racks,suppliers,categories,grn,gin,transfer,consumption,production,materialrequest,damaged,approvals,stockview,reports';
+    const STORE_PAGES='dashboard,items,grn,gin,consumption,materialrequest,damaged,stockview';
     const ALL_PAGES=[
       {id:'dashboard',label:'Dashboard',group:'General'},
       {id:'categories',label:'Category Master',group:'Masters'},
@@ -6763,9 +6776,6 @@ function Users(){
       {id:'grn',label:'Purchase (GRN)',group:'Transactions'},
       {id:'gin',label:'GIN (Issue Note)',group:'Transactions'},
       {id:'transfer',label:'Stock Transfer',group:'Transactions'},
-      {id:'fill',label:'Fill',group:'Transactions'},
-      {id:'tanks',label:'Tanks',group:'Transactions'},
-      {id:'tankproduction',label:'Tank Production',group:'Transactions'},
       {id:'consumption',label:'Consumption',group:'Transactions'},
       {id:'production',label:'Production',group:'Transactions'},
       {id:'materialrequest',label:'Material Request',group:'Transactions'},
@@ -6773,8 +6783,6 @@ function Users(){
       {id:'approvals',label:'Approvals',group:'Transactions'},
       {id:'stockview',label:'Stock View',group:'Inventory'},
       {id:'reports',label:'Reports',group:'Reports & Admin'},
-      {id:'productionreports',label:'Production Reports',group:'Reports & Admin'},
-      {id:'fillreports',label:'Fill Reports',group:'Reports & Admin'},
       {id:'users',label:'User Management',group:'Reports & Admin'},
       {id:'settings',label:'Settings',group:'Reports & Admin'},
     ];
@@ -6996,13 +7004,12 @@ function Users(){
 // ════════════════════════════════════════
 
 // ── Production voucher helpers (shared by Production, Approvals and Tanks) ──
-const proTankLabel = v => { const t = v.tankId && tankSvc.getById(v.tankId); return t ? t.name + ' (' + t.code + ')' : '-'; };
 const proRunLabel = v => v.runSeconds == null ? '-' : fmtDur(v.runSeconds) + '  (' + fmtHMS(v.runSeconds) + ')';
 const proTimesLabel = v => (v.startTime || v.endTime) ? ((fmtTime(v.startTime) || '-') + ' \u2192 ' + (fmtTime(v.endTime) || '-')) : '-';
 const proMetaCards = v => [
   ['wh', 'WAREHOUSE', 'var(--blue)', E(WhBadge, { whId: v.whId })],
   ['prod', 'PRODUCT / BATCH', 'var(--purple)', E('div', { style: { fontWeight: 700 } }, v.productName || '-', v.batchNo ? E('div', { style: { fontSize: 11, color: 'var(--txt2)', fontWeight: 500 } }, 'Batch ' + v.batchNo) : null)],
-  ['tank', 'TANK', '#0891b2', E('div', { style: { fontWeight: 700 } }, v.tankId ? proTankLabel(v) : 'Not recorded')],
+  ['times', 'STARTED \u2192 FINISHED', '#0891b2', E('div', { style: { fontWeight: 700 } }, proTimesLabel(v))],
   ['run', 'ACTUAL RUN TIME', '#7c3aed', E('div', { style: { fontWeight: 800, fontSize: 16, color: '#7c3aed' } }, v.runSeconds == null ? 'Not recorded' : fmtDur(v.runSeconds),
     v.runSeconds != null ? E('div', { style: { fontSize: 11, color: 'var(--txt2)', fontWeight: 500 } }, fmtHMS(v.runSeconds) + (proTimesLabel(v) !== '-' ? '  \u00b7  ' + proTimesLabel(v) : '')) : null)],
 ].map(([k, label, color, body]) => E('div', { key: k, className: 'card', style: { borderLeft: '3px solid ' + color, padding: '12px 14px' } }, E('div', { style: { fontSize: 11, color: 'var(--txt3)', marginBottom: 4 } }, label), body));
@@ -7123,7 +7130,7 @@ function Approvals(){
       :type==='gin'?[['Issued To',v.issuedTo],['Purpose',v.purpose]]
       :type==='transfer'?[['From',whSvc.getById(v.fromWhId)?.name],['To',whSvc.getById(v.toWhId)?.name],['Purpose',v.purpose]]
       :type==='con'?[['Job Type',v.jobType],['Job No.',v.jobNo],['Dept',v.department]]
-      :type==='pro'?[['Product',v.productName],['Batch',v.batchNo],['Tank',v.tankId?proTankLabel(v):'-'],['Actual Run Time',proRunLabel(v)],['Started - Finished',proTimesLabel(v)]]
+      :type==='pro'?[['Product',v.productName],['Batch',v.batchNo],['Actual Run Time',proRunLabel(v)],['Started - Finished',proTimesLabel(v)]]
       :type==='mr'?[['Dept',v.department],['Priority',v.priority],['Required By',fmtDate(v.requiredBy)],['Purpose',v.purpose]]
       :[['Damage Type',v.damageType],['Disposal',v.disposalMethod],['Reported By',v.reportedBy]];
     const colHeaders=type==='grn'?['#','Item','UOM','Qty','Rate','Amount']
@@ -7905,6 +7912,9 @@ function AdminProfileTab({toast}){
 
 
 // ════════════════════════════════════════
+//  SHARED UI + PRODUCTION APP SCREENS
+// ════════════════════════════════════════
+// ════════════════════════════════════════
 //  SHARED UI — Fill / Tank / Production
 // ════════════════════════════════════════
 function useLoad(loaders) {
@@ -7927,7 +7937,8 @@ function LocChip({ type, id }) {
     return E('span', { style: { display: 'inline-flex', alignItems: 'center', gap: 4, background: '#0891b218', color: '#0891b2', border: '1px solid #0891b233', borderRadius: 20, padding: '2px 8px', fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap' } },
       E(Ic, { n: 'tank', s: 10 }), t ? t.name : 'Tank');
   }
-  return E(WhBadge, { whId: id });
+  const l = prodLocSvc.getById(id);
+  return E('span', { style: { display: 'inline-flex', alignItems: 'center', gap: 4, background: '#2563eb14', color: '#2563eb', border: '1px solid #2563eb33', borderRadius: 20, padding: '2px 8px', fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap' } }, '\u25a3 ', l ? l.name : 'Location');
 }
 
 function Stat({ label, value, color = 'var(--blue)', sub, onClick }) {
@@ -8039,8 +8050,8 @@ function FillDetail({ fill, onClose }) {
 }
 
 function FillForm({ onDone, onCancel }) {
-  const { toast, user, isSA, whId } = useCtx();
-  const whs = whSvc.getAll();
+  const { toast, user, isSA } = useCtx();
+  const whs = prodLocSvc.getAll().filter(l => l.status === 'Active');
   const approver = canApproveOps(user, isSA);
   const token = useRef(uid() + uid());
   const busyRef = useRef(false);
@@ -8048,35 +8059,34 @@ function FillForm({ onDone, onCancel }) {
   const [step, setStep] = useState(1);
   const [srcLoading, setSrcLoading] = useState(false);
   const tanks = tanksFor(user, isSA);
-  const operators = userSvc.getAll().filter(u => u.status === 'Active');
+  const operators = prodUserSvc.getAll().filter(u => u.status === 'Active');
   const preTank = PREFILL.fillSrcTank; PREFILL.fillSrcTank = null;
   const [f, setF] = useState(() => ({
-    srcType: preTank ? 'tank' : 'store', srcId: preTank || (whId || (whs[0] && whs[0].id) || ''),
+    srcType: preTank ? 'tank' : 'location', srcId: preTank || ((whs[0] && whs[0].id) || ''),
     dstType: 'tank', dstId: '', itemId: preTank ? ((tankSvc.getById(preTank) || {}).itemId || '') : '', qty: '',
     date: today(), time: nowHM(), operatorId: user && user.id, notes: '',
   }));
   const set = (k, v) => setF(p => ({ ...p, [k]: v }));
   const setSrc = (type, id) => setF(p => ({ ...p, srcType: type, srcId: id, itemId: type === 'tank' ? ((tankSvc.getById(id) || {}).itemId || '') : '', qty: '' }));
 
-  // make sure items + stock of the chosen source store are loaded (Super Admin only has one store preloaded)
+  // make sure the latest production stock is loaded
   useEffect(() => {
-    if (f.srcType !== 'store' || !f.srcId) return;
     let live = true; setSrcLoading(true);
-    itemSvc.loadAll(f.srcId).then(() => stockSvc.loadAll(f.srcId)).catch(() => {}).finally(() => { if (live) setSrcLoading(false); });
+    prodStockSvc.loadAll().catch(() => {}).finally(() => { if (live) setSrcLoading(false); });
     return () => { live = false; };
-  }, [f.srcType, f.srcId]);
+  }, []);
 
   const srcTank = f.srcType === 'tank' ? tankSvc.getById(f.srcId) : null;
   const dstTank = f.dstType === 'tank' ? tankSvc.getById(f.dstId) : null;
-  const srcItems = f.srcType === 'store' ? itemSvc.getAll(f.srcId).filter(i => i.status === 'Active') : [];
-  const item = f.srcType === 'store' ? srcItems.find(i => i.id === f.itemId) : (srcTank && srcTank.itemId ? { id: srcTank.itemId, name: srcTank.product, unit: srcTank.unit } : null);
-  const avail = !item ? 0 : f.srcType === 'store' ? stockSvc.getQty(item.id, f.srcId) : srcTank.qty;
+  const srcItems = f.srcType === 'location' ? prodStockSvc.itemsAt(f.srcId) : [];
+  const item = f.srcType === 'location' ? srcItems.find(i => i.id === f.itemId) : (srcTank && srcTank.itemId ? { id: srcTank.itemId, name: srcTank.product, unit: srcTank.unit } : null);
+  const avail = !item ? 0 : f.srcType === 'location' ? prodStockSvc.getQty(item.id, f.srcId) : srcTank.qty;
   const unit = item ? item.unit : '';
   const qty = Number(f.qty) || 0;
-  const wholeOnly = f.srcType === 'store' || f.dstType === 'store';
+  const wholeOnly = false;   // the Production domain stores decimals everywhere
   const sameLoc = f.srcType === f.dstType && f.srcId && f.srcId === f.dstId;
   const dstFree = dstTank && dstTank.capacity > 0 ? dstTank.capacity - dstTank.qty : null;
-  const dstMismatch = dstTank && dstTank.qty > 0 && item && dstTank.product && dstTank.product.toLowerCase() !== String(item.name).toLowerCase();
+  const dstMismatch = dstTank && dstTank.qty > 0 && item && dstTank.itemId !== item.id;
 
   const problems = [];
   if (!f.srcId) problems.push('Choose a source'); if (!f.dstId) problems.push('Choose a destination');
@@ -8087,7 +8097,6 @@ function FillForm({ onDone, onCancel }) {
   if (!item) problems.push('Choose a product');
   if (!(qty > 0)) problems.push('Enter a fill quantity'); else {
     if (qty > avail) problems.push('Only ' + qtyFmt(avail) + ' ' + unit + ' available');
-    if (wholeOnly && !Number.isInteger(qty)) problems.push('Quantity must be a whole number when a store is involved');
     if (dstFree != null && qty > dstFree) problems.push('Destination tank has only ' + qtyFmt(dstFree) + ' ' + dstTank.unit + ' free');
   }
   if (dstMismatch) problems.push('Destination tank holds ' + dstTank.product + ' \u2014 empty it first or pick another tank');
@@ -8124,13 +8133,13 @@ function FillForm({ onDone, onCancel }) {
   const locPicker = (which) => {
     const type = which === 'src' ? f.srcType : f.dstType, id = which === 'src' ? f.srcId : f.dstId;
     const pick = (t, i) => which === 'src' ? setSrc(t, i) : setF(p => ({ ...p, dstType: t, dstId: i }));
-    const storeList = which === 'src' && !isSA && whId ? whs.filter(w => w.id === whId) : whs;
+    const storeList = whs;
     return E('div', null,
       E('div', { style: { display: 'flex', gap: 8, marginBottom: 10 } },
-        chip('store', '\ud83c\udfea Store / Warehouse', type, t => pick(t, t === 'store' ? ((storeList[0] || {}).id || '') : '')),
+        chip('location', '\u25a3 Unit / Location', type, t => pick(t, t === 'location' ? ((storeList[0] || {}).id || '') : '')),
         chip('tank', '\ud83d\udee2\ufe0f Tank', type, t => pick(t, ''))),
-      type === 'store'
-        ? E('select', { className: 'fi', value: id, onChange: e => pick('store', e.target.value) }, E('option', { value: '' }, 'Select store\u2026'),
+      type === 'location'
+        ? E('select', { className: 'fi', value: id, onChange: e => pick('location', e.target.value) }, E('option', { value: '' }, whs.length ? 'Select location\u2026' : 'No locations \u2014 add one in Masters first'),
             storeList.map(w => E('option', { key: w.id, value: w.id }, w.name + ' (' + w.code + ')')))
         : E('select', { className: 'fi', value: id, onChange: e => pick('tank', e.target.value) }, E('option', { value: '' }, tanks.length ? 'Select tank\u2026' : 'No tanks \u2014 create one in Tanks first'),
             tanks.map(t => E('option', { key: t.id, value: t.id, disabled: t.status === 'Disabled' || t.status === 'Maintenance' },
@@ -8144,10 +8153,10 @@ function FillForm({ onDone, onCancel }) {
       dstTank ? E('div', { className: 'alert alert-blue', style: { marginTop: 10, marginBottom: 0 } }, E(Ic, { n: 'info', s: 13 }),
         dstTank.name + ': ' + (dstTank.product ? qtyFmt(dstTank.qty) + ' ' + dstTank.unit + ' of ' + dstTank.product : 'empty') + (dstFree != null ? ' \u00b7 ' + qtyFmt(dstFree) + ' ' + dstTank.unit + ' free' : '')) : null)
     : step === 3 ? E('div', null, E('h3', { style: { margin: '0 0 10px', fontSize: 14 } }, 'Which product?'),
-      f.srcType === 'store'
-        ? (srcLoading ? E(LoadingBlock, { text: 'Loading store items\u2026' }) : E('select', { className: 'fi', value: f.itemId, onChange: e => set('itemId', e.target.value) },
-            E('option', { value: '' }, srcItems.length ? 'Select product\u2026' : 'No items in this store'),
-            srcItems.map(i => { const a = stockSvc.getQty(i.id, f.srcId); return E('option', { key: i.id, value: i.id, disabled: a <= 0 }, i.code + ' \u2014 ' + i.name + ' (Avail: ' + a + ' ' + i.unit + ')'); })))
+      f.srcType === 'location'
+        ? (srcLoading ? E(LoadingBlock, { text: 'Loading stock\u2026' }) : E('select', { className: 'fi', value: f.itemId, onChange: e => set('itemId', e.target.value) },
+            E('option', { value: '' }, srcItems.length ? 'Select product\u2026' : 'No stock in this location'),
+            srcItems.map(i => E('option', { key: i.id, value: i.id }, i.code + ' \u2014 ' + i.name + ' (Avail: ' + qtyFmt(i.qty) + ' ' + i.unit + ')'))))
         : (srcTank && srcTank.itemId
             ? E('div', { className: 'card', style: { background: 'var(--blue-light)', padding: 12 } }, E('strong', null, srcTank.product), E('div', { style: { fontSize: 12, color: 'var(--txt2)' } }, 'A tank holds one product \u2014 it is selected automatically.'))
             : E('div', { className: 'alert alert-red', style: { marginBottom: 0 } }, E(Ic, { n: 'alert', s: 13 }), 'This tank is empty \u2014 nothing to fill from it.')),
@@ -8192,14 +8201,15 @@ function FillForm({ onDone, onCancel }) {
               approver ? E('button', { className: 'btn btn-success', disabled: busy || problems.length > 0, onClick: () => submit('complete') }, busy ? 'Working\u2026' : '\u2713 Confirm & Complete') : null))));
 }
 
-function FillPage() {
+function FillPage({ mode }) {
   const { toast, user, isSA, setModal, reload } = useCtx();
-  const { loading, reload: refetch } = useLoad([() => fillSvc.loadAll(), () => tankSvc.loadAll()]);
-  const [view, setView] = useState(PREFILL.fillSrcTank ? 'new' : 'list');
+  const appr = mode === 'approvals';
+  const { loading, reload: refetch } = useLoad([() => fillSvc.loadAll(), () => tankSvc.loadAll(), () => prodLocSvc.loadAll(), () => prodUserSvc.loadAll(), () => prodItemSvc.loadAll(), () => prodStockSvc.loadAll()]);
+  const [view, setView] = useState(!appr && PREFILL.fillSrcTank ? 'new' : 'list');
   const [q, setQ] = useState(''); const [st, setSt] = useState(''); const [from, setFrom] = useState(''); const [to, setTo] = useState('');
   const approver = canApproveOps(user, isSA);
   const all = fillSvc.getAll().filter(f => inScopeFill(f, user, isSA));
-  const rows = all.filter(f => (!st || f.status === st) && (!from || f.date >= from) && (!to || f.date <= to) &&
+  const rows = all.filter(f => (!appr || ['Pending', 'Approved', 'Draft'].includes(f.status)) && (!st || f.status === st) && (!from || f.date >= from) && (!to || f.date <= to) &&
     (!q || [f.no, f.product, f.operator, locLabel(f.srcType, f.srcId), locLabel(f.dstType, f.dstId)].join(' ').toLowerCase().includes(q.toLowerCase())));
   const after = async () => { await Promise.all([fillSvc.loadAll(), tankSvc.loadAll()]); reload(); };
   const done = async () => { setView('list'); await after(); };
@@ -8215,7 +8225,7 @@ function FillPage() {
     if (kind === 'cancel') return setModal(E(ActionModal, { title: 'Cancel ' + f.no, okLabel: 'Cancel fill', okClass: 'btn-danger', needReason: true, reasonLabel: 'Reason for cancelling', onClose: () => setModal(null),
       onOk: async (reason) => { await fillSvc.setStatus(f.id, 'Cancelled', name, reason); toast(f.no + ' cancelled', 'success'); await after(); } }, 'No stock has moved for this fill, so nothing needs reversing.'));
     if (kind === 'complete') {
-      const cur = f.srcType === 'store' ? stockSvc.getQty(f.itemId, f.srcId) : (tankSvc.getById(f.srcId) || {}).qty;
+      const cur = f.srcType === 'location' ? prodStockSvc.getQty(f.itemId, f.srcId) : (tankSvc.getById(f.srcId) || {}).qty;
       return setModal(E(ActionModal, { title: 'Complete ' + f.no, okLabel: 'Confirm & complete', okClass: 'btn-success', onClose: () => setModal(null),
         onOk: async () => { await fillSvc.complete(f.id, name); toast(f.no + ' completed \u2014 stock updated', 'success'); await after(); } },
         E('div', { style: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 8 } }, E(LocChip, { type: f.srcType, id: f.srcId }), E('strong', null, '\u2192'), E(LocChip, { type: f.dstType, id: f.dstId })),
@@ -8237,8 +8247,8 @@ function FillPage() {
   const cnt = s => all.filter(f => f.status === s).length;
   const doneToday = all.filter(f => f.status === 'Completed' && f.date === today());
   return E('div', null,
-    E('div', { className: 'ph' }, E('div', { className: 'ph-l' }, E('h1', null, 'Fill'), E('p', null, 'Move product between stores and tanks \u2014 same approval flow as Stock Transfer')),
-      E('div', { className: 'ph-r' }, E('button', { className: 'btn btn-primary', onClick: () => setView('new') }, E(Ic, { n: 'plus', s: 13, c: '#fff' }), ' New Fill'))),
+    E('div', { className: 'ph' }, E('div', { className: 'ph-l' }, E('h1', null, appr ? 'Approvals' : 'Fill'), E('p', null, appr ? 'Fills waiting for approval or completion' : 'Move product between tanks and production locations')),
+      E('div', { className: 'ph-r' }, appr ? null : E('button', { className: 'btn btn-primary', onClick: () => setView('new') }, E(Ic, { n: 'plus', s: 13, c: '#fff' }), ' New Fill'))),
     E(SetupNotice, { svcs: [fillSvc, tankSvc] }),
     E('div', { className: 'grid g4', style: { marginBottom: 12 } },
       E(Stat, { label: 'Pending approval', value: cnt('Pending'), color: 'var(--amber)', onClick: () => setSt('Pending') }),
@@ -8288,11 +8298,11 @@ function Gauge({ qty, cap, color }) {
 
 function TankForm({ initial, onClose, onSaved }) {
   const { toast, user } = useCtx();
-  const whs = whSvc.getAll();
+  const whs = prodLocSvc.getAll().filter(l => l.status === 'Active');
   const [catalog, setCatalog] = useState(catalogSvc.get());
   useEffect(() => { catalogSvc.load().then(setCatalog); }, []);
-  const [f, setF] = useState(initial ? { code: initial.code, name: initial.name, whId: initial.whId || '', location: initial.location, capacity: initial.capacity, unit: initial.unit, status: initial.status, description: initial.description }
-    : { code: '', name: '', whId: '', location: '', capacity: '', unit: 'LTR', status: 'Available', description: '', itemId: '', openingQty: '' });
+  const [f, setF] = useState(initial ? { code: initial.code, name: initial.name, locId: initial.locId || '', location: initial.location, capacity: initial.capacity, unit: initial.unit, status: initial.status, description: initial.description }
+    : { code: '', name: '', locId: '', location: '', capacity: '', unit: 'MT', status: 'Available', description: '', itemId: '', openingQty: '' });
   const [err, setErr] = useState(''); const [busy, setBusy] = useState(false); const lock = useRef(false);
   const set = (k, v) => setF(p => ({ ...p, [k]: v }));
   const save = async () => {
@@ -8315,7 +8325,7 @@ function TankForm({ initial, onClose, onSaved }) {
       E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Tank name *'), E('input', { className: 'fi', value: f.name, placeholder: 'e.g. Tank 03', onChange: e => set('name', e.target.value) })),
       E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Tank code *'), E('input', { className: 'fi', value: f.code, disabled: !!initial, placeholder: 'e.g. TNK-03', onChange: e => set('code', e.target.value.toUpperCase().replace(/\s/g, '')) }))),
     E('div', { className: 'frow' },
-      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Warehouse / location'), E('select', { className: 'fi', value: f.whId, onChange: e => set('whId', e.target.value) }, E('option', { value: '' }, '\u2014 Not assigned (visible to all) \u2014'), whs.map(w => E('option', { key: w.id, value: w.id }, w.name + ' (' + w.code + ')')))),
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Production location'), E('select', { className: 'fi', value: f.locId, onChange: e => set('locId', e.target.value) }, E('option', { value: '' }, '\u2014 Not assigned \u2014'), whs.map(w => E('option', { key: w.id, value: w.id }, w.name + ' (' + w.code + ')')))),
       E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Location detail'), E('input', { className: 'fi', value: f.location, placeholder: 'e.g. Yard B, bay 2', onChange: e => set('location', e.target.value) }))),
     E('div', { className: 'frow3' },
       E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Capacity'), E('input', { className: 'fi', type: 'number', min: 0, step: 'any', value: f.capacity, placeholder: '0 = not set', onChange: e => set('capacity', e.target.value) })),
@@ -8368,13 +8378,13 @@ function TankDetail({ tankId, onClose, onChanged }) {
     E('div', { style: { display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14, alignItems: 'center' } },
       E(StatusBadge, { s: t.status }), E('span', { style: { flex: 1 } }),
       E('button', { className: 'btn btn-outline btn-sm', disabled: !t.qty, title: t.qty ? '' : 'Tank is empty', onClick: () => { PREFILL.fillSrcTank = t.id; onClose(); nav('fill'); } }, 'Fill from this tank'),
-      E('button', { className: 'btn btn-primary btn-sm', disabled: !canProduce, title: canProduce ? '' : 'Needs product in the tank and status Available / Completed', onClick: () => { PREFILL.tankId = t.id; onClose(); nav('tankproduction'); } }, 'New production'),
+      E('button', { className: 'btn btn-primary btn-sm', disabled: !canProduce, title: canProduce ? '' : 'Needs product in the tank and status Available / Completed', onClick: () => { PREFILL.tankId = t.id; onClose(); nav('runs'); } }, 'New production'),
       mgr ? E('button', { className: 'btn btn-outline btn-sm', onClick: () => setModal(E(TankAdjustModal, { tank: t, onClose: reopen, onSaved: reopen })) }, 'Adjust qty') : null,
       mgr ? E('button', { className: 'btn btn-outline btn-sm', onClick: () => setModal(E(TankForm, { initial: t, onClose: reopen, onSaved: reopen })) }, 'Edit') : null),
     E('div', { className: 'grid g3', style: { gap: 12, marginBottom: 14 } },
       E('div', { className: 'card', style: { padding: 14 } }, E(KV, { label: 'Current product' }, t.product || 'Empty'),
         E('div', { style: { fontSize: 24, fontWeight: 800, margin: '6px 0' } }, qtyFmt(t.qty), E('span', { style: { fontSize: 13, color: 'var(--txt2)' } }, ' ' + t.unit + (t.capacity > 0 ? ' / ' + qtyFmt(t.capacity) : ''))), E(Gauge, { qty: t.qty, cap: t.capacity })),
-      E('div', { className: 'card', style: { padding: 14, display: 'grid', gap: 8 } }, E(KV, { label: 'Location' }, (t.whId ? (whSvc.getById(t.whId) || {}).name : 'All warehouses') + (t.location ? ' \u00b7 ' + t.location : '')),
+      E('div', { className: 'card', style: { padding: 14, display: 'grid', gap: 8 } }, E(KV, { label: 'Location' }, (t.locId ? (prodLocSvc.getById(t.locId) || {}).name : 'Not assigned') + (t.location ? ' \u00b7 ' + t.location : '')),
         E(KV, { label: 'Description' }, t.description), E(KV, { label: 'Created' }, fmtDate(t.createdAt) + (t.createdBy ? ' by ' + t.createdBy : ''))),
       E('div', { className: 'card', style: { padding: 14 } }, E(KV, { label: 'Change status' }),
         E('select', { className: 'fi', value: t.status, disabled: !mgr, onChange: e => changeStatus(e.target.value) }, TANK_STATUSES.map(s => E('option', { key: s, value: s }, TANK_STATUS_LABEL[s] || s))),
@@ -8403,7 +8413,7 @@ function TankDetail({ tankId, onClose, onChanged }) {
 
 function TanksPage() {
   const { toast, user, isSA, setModal, reload } = useCtx();
-  const { loading, reload: refetch } = useLoad([() => tankSvc.loadAll(), () => tprodSvc.loadAll(), () => fillSvc.loadAll(), () => catalogSvc.load(), () => proSvc.loadAll(), () => proLinesSvc.load()]);
+  const { loading, reload: refetch } = useLoad([() => tankSvc.loadAll(), () => tprodSvc.loadAll(), () => fillSvc.loadAll(), () => catalogSvc.load(), () => prodLocSvc.loadAll()]);
   const [q, setQ] = useState(''); const [st, setSt] = useState(''); const [mode, setMode] = useState('cards');
   const mgr = canManageTanks(user, isSA);
   const all = tanksFor(user, isSA);
@@ -8449,7 +8459,7 @@ function TanksPage() {
           E('thead', null, E('tr', null, ['Tank', 'Code', 'Location', 'Product', 'Quantity', 'Capacity', 'Fill %', 'Runs', 'Status', ''].map((h, i) => E('th', { key: i }, h)))),
           E('tbody', null, rows.map(t => E('tr', { key: t.id, style: { cursor: 'pointer' }, onClick: () => open(t) },
             E('td', null, E('strong', null, t.name)), E('td', null, E('span', { className: 'mono', style: { fontSize: 11 } }, t.code)),
-            E('td', null, (t.whId ? (whSvc.getById(t.whId) || {}).code : 'All') + (t.location ? ' \u00b7 ' + t.location : '')), E('td', null, t.product || '\u2014'),
+            E('td', null, (t.locId ? (prodLocSvc.getById(t.locId) || {}).code : '\u2014') + (t.location ? ' \u00b7 ' + t.location : '')), E('td', null, t.product || '\u2014'),
             E('td', null, E('strong', null, qtyFmt(t.qty)), ' ', t.unit), E('td', null, t.capacity ? qtyFmt(t.capacity) : '\u2014'), E('td', { style: { minWidth: 90 } }, t.capacity ? E(Gauge, { qty: t.qty, cap: t.capacity }) : '\u2014'),
             E('td', null, tankStats(t.id).count), E('td', null, E(StatusBadge, { s: t.status })),
             E('td', null, mgr ? E('button', { className: 'btn btn-danger btn-xs', onClick: e => { e.stopPropagation(); remove(t); } }, E(Ic, { n: 'trash', s: 11 })) : null)))))));
@@ -8458,18 +8468,18 @@ function TanksPage() {
 // ════════════════════════════════════════
 //  TANK PRODUCTION  (run time is entered AFTER the run — no timers anywhere)
 // ════════════════════════════════════════
-// "Output goes to": same tank | another tank | a store
+// "Output goes to": same tank | another tank | a location
 function OutDest({ type, id, tankId, onChange }) {
-  const whs = whSvc.getAll(); const others = tankSvc.getAll().filter(t => t.id !== tankId && t.status !== 'Disabled');
-  const mode = type === 'store' ? 'store' : (id ? 'tank' : 'same');
-  const pick = m => m === 'same' ? onChange('tank', '') : m === 'tank' ? onChange('tank', (others[0] || {}).id || '') : onChange('store', (whs[0] || {}).id || '');
+  const whs = prodLocSvc.getAll().filter(l => l.status === 'Active'); const others = tankSvc.getAll().filter(t => t.id !== tankId && t.status !== 'Disabled');
+  const mode = type === 'location' ? 'location' : (id ? 'tank' : 'same');
+  const pick = m => m === 'same' ? onChange('tank', '') : m === 'tank' ? onChange('tank', (others[0] || {}).id || '') : onChange('location', (whs[0] || {}).id || '');
   return E('div', { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
-    E('select', { className: 'fi', style: { flex: '0 0 130px' }, value: mode, onChange: e => pick(e.target.value) }, E('option', { value: 'same' }, 'Same tank'), E('option', { value: 'tank' }, 'Another tank'), E('option', { value: 'store' }, 'A store')),
-    mode === 'store' ? E('select', { className: 'fi', style: { flex: 1, minWidth: 120 }, value: id, onChange: e => onChange('store', e.target.value) }, whs.map(w => E('option', { key: w.id, value: w.id }, w.name))) : null,
+    E('select', { className: 'fi', style: { flex: '0 0 130px' }, value: mode, onChange: e => pick(e.target.value) }, E('option', { value: 'same' }, 'Same tank'), E('option', { value: 'tank' }, 'Another tank'), E('option', { value: 'location' }, 'A location')),
+    mode === 'location' ? E('select', { className: 'fi', style: { flex: 1, minWidth: 120 }, value: id, onChange: e => onChange('location', e.target.value) }, whs.map(w => E('option', { key: w.id, value: w.id }, w.name))) : null,
     mode === 'tank' ? E('select', { className: 'fi', style: { flex: 1, minWidth: 120 }, value: id, onChange: e => onChange('tank', e.target.value) },
       others.length ? others.map(t => E('option', { key: t.id, value: t.id }, t.name + ' (' + t.code + ') \u2014 ' + (t.product ? qtyFmt(t.qty) + ' ' + t.unit + ' ' + t.product : 'empty'))) : E('option', { value: '' }, 'No other tank')) : null);
 }
-const outDestLabel = (type, id) => !id ? 'Same tank' : locLabel(type === 'store' ? 'store' : 'tank', id);
+const outDestLabel = (type, id) => !id ? 'Same tank' : locLabel(type === 'location' ? 'location' : 'tank', id);
 
 function ProdDetail({ prodId, onClose }) {
   const [ledger, setLedger] = useState(null); const [audit, setAudit] = useState(null);
@@ -8491,7 +8501,7 @@ function ProdDetail({ prodId, onClose }) {
 
 function CompleteProdModal({ prod, onClose, onDone }) {
   const { user } = useCtx();
-  const whs = whSvc.getAll(); const tank = tankSvc.getById(prod.tankId);
+  const whs = prodLocSvc.getAll(); const tank = tankSvc.getById(prod.tankId);
   const [catalog, setCatalog] = useState(catalogSvc.get());
   useEffect(() => { catalogSvc.load().then(setCatalog); }, []);
   const [f, setF] = useState({ actualQty: prod.plannedQty || '', outItemId: prod.outItemId || prod.inItemId || '', outDestType: prod.outDestType || 'tank', outDestId: prod.outDestId || '',
@@ -8506,20 +8516,19 @@ function CompleteProdModal({ prod, onClose, onDone }) {
       if (f.actualQty === '' || !(aq >= 0)) throw new Error('Enter the actual output quantity');
       if (secs <= 0) throw new Error('Enter the Actual Run Time the production took');
       if ((Number(f.m) || 0) > 59 || (Number(f.s) || 0) > 59) throw new Error('Minutes and seconds must be 59 or less');
-      if (f.outDestType === 'store' && !f.outDestId) throw new Error('Choose the store that receives the output');
+      if (f.outDestType === 'location' && !f.outDestId) throw new Error('Choose the location that receives the output');
       if (f.outDestType === 'tank' && f.outDestId === prod.tankId) f.outDestId = '';
       { const dt = f.outDestType === 'tank' && f.outDestId ? tankSvc.getById(f.outDestId) : null;
         if (dt) { if (['Maintenance', 'Disabled'].includes(dt.status)) throw new Error(dt.name + ' is ' + dt.status + ' and cannot receive product'); if (dt.qty > 0 && dt.product && String(dt.product).toLowerCase() !== String(outName).toLowerCase()) throw new Error(dt.name + ' already holds ' + dt.product + ' \u2014 choose an empty tank or one holding ' + outName); if (dt.capacity > 0 && dt.qty + aq > dt.capacity) throw new Error(dt.name + ' has only ' + qtyFmt(dt.capacity - dt.qty) + ' ' + dt.unit + ' free'); } }
-      if (f.outDestType === 'store' && !Number.isInteger(aq)) throw new Error('Output moved to a store must be a whole number');
       if (f.outDestType === 'tank' && !f.outDestId && tank && tank.qty > prod.inQty && aq > 0 && String(outName).toLowerCase() !== String(tank.product).toLowerCase())
-        throw new Error(qtyFmt(tank.qty - prod.inQty) + ' ' + tank.unit + ' of ' + tank.product + ' stays in the tank, so it cannot also hold ' + outName + '. Send the output to a store or use the same product.');
+        throw new Error(qtyFmt(tank.qty - prod.inQty) + ' ' + tank.unit + ' of ' + tank.product + ' stays in the tank, so it cannot also hold ' + outName + '. Send the output to a location or use the same product.');
       await tprodSvc.complete(prod.id, { ...f, actualQty: aq, user: user && user.name }); onDone();
     } },
     E('div', { className: 'alert alert-blue' }, E(Ic, { n: 'info', s: 13 }), 'Enter how long the production ',
       E('strong', null, 'already took'), '. Nothing is timing in the background \u2014 the value you type is saved as the Actual Run Time.'),
     E('div', { className: 'card', style: { background: 'var(--blue-light)', padding: 12, marginBottom: 12, fontSize: 12 } },
       E('strong', null, tank ? tank.name : 'Tank'), ': \u2212', E('strong', null, qtyFmt(prod.inQty) + ' ' + prod.unit), ' ', prod.inProduct,
-      '  \u2192  +', E('strong', null, f.actualQty === '' ? '?' : qtyFmt(f.actualQty) + ' ' + prod.unit), ' ', outName, f.outDestId ? ' into ' + locLabel(f.outDestType === 'store' ? 'store' : 'tank', f.outDestId) : ' (stays in tank)'),
+      '  \u2192  +', E('strong', null, f.actualQty === '' ? '?' : qtyFmt(f.actualQty) + ' ' + prod.unit), ' ', outName, f.outDestId ? ' into ' + locLabel(f.outDestType === 'location' ? 'location' : 'tank', f.outDestId) : ' (stays in tank)'),
     E('div', { className: 'frow' },
       E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Actual output quantity (' + prod.unit + ') *'), E('input', { className: 'fi', type: 'number', min: 0, step: 'any', value: f.actualQty, style: { fontWeight: 800, fontSize: 16 }, onChange: e => set('actualQty', e.target.value) }),
         E('div', { style: { fontSize: 10, color: 'var(--txt3)', marginTop: 2 } }, 'Planned: ' + qtyFmt(prod.plannedQty) + ' ' + prod.unit + (f.actualQty !== '' && prod.inQty ? '  \u00b7  Yield ' + (Number(f.actualQty) / prod.inQty * 100).toFixed(1) + '%' : ''))),
@@ -8540,7 +8549,7 @@ function CompleteProdModal({ prod, onClose, onDone }) {
 
 function ProdForm({ onDone, onCancel }) {
   const { toast, user, isSA } = useCtx();
-  const whs = whSvc.getAll(); const operators = userSvc.getAll().filter(u => u.status === 'Active');
+  const whs = prodLocSvc.getAll(); const operators = prodUserSvc.getAll().filter(u => u.status === 'Active');
   const [catalog, setCatalog] = useState(catalogSvc.get());
   useEffect(() => { catalogSvc.load().then(setCatalog); }, []);
   const token = useRef(uid() + uid()); const lock = useRef(false);
@@ -8561,7 +8570,7 @@ function ProdForm({ onDone, onCancel }) {
     if (busyTank) problems.push('Tank already has production ' + busyTank.no + ' in progress');
   }
   if (!(inQty > 0)) problems.push('Enter the input quantity'); else if (tank && inQty > tank.qty) problems.push('Only ' + qtyFmt(tank.qty) + ' ' + tank.unit + ' in the tank');
-  if (f.outDestType === 'store' && !f.outDestId) problems.push('Choose the output store');
+  if (f.outDestType === 'location' && !f.outDestId) problems.push('Choose the output location');
   { const dt = f.outDestType === 'tank' && f.outDestId ? tankSvc.getById(f.outDestId) : null;
     if (dt) { const on = (catalog.find(c => c.id === f.outItemId) || {}).name || (tank && tank.product) || '';
       if (['Maintenance', 'Disabled'].includes(dt.status)) problems.push(dt.name + ' is ' + dt.status + ' and cannot receive product');
@@ -8570,7 +8579,7 @@ function ProdForm({ onDone, onCancel }) {
   if (tank && f.outDestType === 'tank' && !f.outDestId && inQty > 0 && inQty < tank.qty) {
     const outN = (catalog.find(c => c.id === f.outItemId) || {}).name || tank.product;
     if (String(outN).toLowerCase() !== String(tank.product).toLowerCase())
-      problems.push(qtyFmt(tank.qty - inQty) + ' ' + tank.unit + ' of ' + tank.product + ' would be left in the tank, so it cannot also hold ' + outN + '. Use the full tank quantity, send the output to a store, or keep the same product.');
+      problems.push(qtyFmt(tank.qty - inQty) + ' ' + tank.unit + ' of ' + tank.product + ' would be left in the tank, so it cannot also hold ' + outN + '. Use the full tank quantity, send the output to a location, or keep the same product.');
   }
 
   const submit = async (mode) => {
@@ -8617,11 +8626,11 @@ function ProdForm({ onDone, onCancel }) {
 
 function TankProductionPage() {
   const { toast, user, isSA, setModal, reload } = useCtx();
-  const { loading } = useLoad([() => tprodSvc.loadAll(), () => tankSvc.loadAll(), () => catalogSvc.load()]);
+  const { loading } = useLoad([() => tprodSvc.loadAll(), () => tankSvc.loadAll(), () => catalogSvc.load(), () => prodLocSvc.loadAll(), () => prodUserSvc.loadAll()]);
   const [view, setView] = useState(PREFILL.tankId ? 'new' : 'list');
   const [q, setQ] = useState(''); const [st, setSt] = useState(''); const [tk, setTk] = useState(''); const [from, setFrom] = useState(''); const [to, setTo] = useState('');
   const tanks = tanksFor(user, isSA); const tankIds = new Set(tanks.map(t => t.id));
-  const all = tprodSvc.getAll().filter(p => isSA || !user.whId || tankIds.has(p.tankId));
+  const all = tprodSvc.getAll();
   const rows = all.filter(p => (!st || p.status === st) && (!tk || p.tankId === tk) && (!from || p.date >= from) && (!to || p.date <= to) &&
     (!q || [p.no, p.inProduct, p.outProduct, p.operator, (tankSvc.getById(p.tankId) || {}).name].join(' ').toLowerCase().includes(q.toLowerCase())));
   const after = async () => { await Promise.all([tprodSvc.loadAll(), tankSvc.loadAll()]); reload(); };
@@ -8709,12 +8718,12 @@ function aggProd(rows, keyFn, labelFn) {
 }
 function ProductionReportsPage() {
   const { user, isSA } = useCtx();
-  const { loading } = useLoad([() => tprodSvc.loadAll(), () => tankSvc.loadAll(), () => proSvc.loadAll(), () => proLinesSvc.load()]);
+  const { loading } = useLoad([() => tprodSvc.loadAll(), () => tankSvc.loadAll(), () => prodLocSvc.loadAll()]);
   const [tab, setTab] = useState('overview');
   const [fl, setFl] = useState({ from: '', to: '', tank: '', product: '', operator: '', status: 'Completed' });
   const setF = (k, v) => setFl(p => ({ ...p, [k]: v }));
   const tanks = tanksFor(user, isSA); const ids = new Set(tanks.map(t => t.id));
-  const all = unifiedRuns(user, isSA);
+  const all = unifiedRuns();
   const rows = all.filter(p => (!fl.status || p.status === fl.status) && (!fl.tank || p.tankId === fl.tank) && (!fl.from || p.date >= fl.from) && (!fl.to || p.date <= fl.to) &&
     (!fl.operator || p.operator === fl.operator) && (!fl.product || p.inProduct === fl.product || p.outProduct === fl.product));
   const products = [...new Set(all.flatMap(p => [p.inProduct, p.outProduct]).filter(Boolean))].sort();
@@ -8861,52 +8870,9 @@ function FillReportsPage() {
     : E(ReportTable, { cols: histCols, rows: [...rows].sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(b.no).localeCompare(String(a.no))) }));
 }
 
-// ── DASHBOARD: Production & Tank Overview ──
-function ProdTankOverview() {
-  const { user, isSA, nav } = useCtx();
-  const canSee = id => isSA || (user && (user.pages === 'all' || String(user.pages || '').split(',').map(s => s.trim()).includes(id)));
-  const show = canSee('tanks') || canSee('tankproduction') || canSee('fill');
-  const { loading } = useLoad([() => tankSvc.loadAll(), () => tprodSvc.loadAll(), () => fillSvc.loadAll(), () => proSvc.loadAll(), () => proLinesSvc.load()]);
-  if (!show) return null;
-  const tanks = tanksFor(user, isSA); const ids = new Set(tanks.map(t => t.id));
-  const prods = unifiedRuns(user, isSA);
-  const fills = fillSvc.getAll().filter(f => inScopeFill(f, user, isSA));
-  const done = prods.filter(p => p.status === 'Completed'); const secs = done.reduce((s, p) => s + (p.runSeconds || 0), 0); const timedN = done.filter(p => p.runSeconds != null).length;
-  const prodToday = done.filter(p => p.date === today()); const fillToday = fills.filter(f => f.date === today() && f.status !== 'Cancelled');
-  const cnt = s => tanks.filter(t => t.status === s).length;
-  const go = id => canSee(id) ? () => nav(id) : undefined;
-  const recentProd = [...prods].filter(p => p.status !== 'Cancelled').sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 5);
-  const recentFill = fills.slice(0, 5);
-  const err = [tankSvc, tprodSvc, fillSvc].map(s => s._err).find(Boolean);
-  return E('div', { style: { marginBottom: 14 } },
-    E('div', { style: { fontSize: 13, fontWeight: 800, color: 'var(--navy)', margin: '4px 0 8px' } }, 'Production & Tank Overview'),
-    err ? E('div', { className: 'alert alert-amber' }, E(Ic, { n: 'alert', s: 13 }), err) : null,
-    E('div', { className: 'grid g4', style: { marginBottom: 10 } },
-      E(Stat, { label: 'Total tanks', value: tanks.length, color: 'var(--blue)', onClick: go('tanks') }), E(Stat, { label: 'Available tanks', value: cnt('Available'), color: 'var(--green)', onClick: go('tanks') }),
-      E(Stat, { label: 'Processing tanks', value: cnt('Processing'), color: 'var(--amber)', onClick: go('tanks') }), E(Stat, { label: 'Maintenance tanks', value: cnt('Maintenance'), color: '#7c3aed', onClick: go('tanks') })),
-    E('div', { className: 'grid g4', style: { marginBottom: 12 } },
-      E(Stat, { label: 'Total production runs', value: done.length, color: '#0891b2', onClick: go('tankproduction') }),
-      E(Stat, { label: "Today's production", value: prodToday.length + ' run' + (prodToday.length === 1 ? '' : 's'), color: 'var(--green)', sub: qtyFmt(prodToday.reduce((s, p) => s + (p.actualQty || 0), 0)) + ' output', onClick: go('tankproduction') }),
-      E(Stat, { label: "Today's fill transactions", value: fillToday.length, color: 'var(--blue)', sub: fillToday.filter(f => f.status === 'Completed').length + ' completed', onClick: go('fill') }),
-      E(Stat, { label: 'Total / average run time', value: fmtDur(secs), color: '#7c3aed', sub: timedN ? 'avg ' + fmtDur(secs / timedN) + ' per run' : 'no completed runs' })),
-    E('div', { className: 'grid g2' },
-      E('div', { className: 'card' }, E('div', { className: 'card-hd' }, E('span', { className: 'card-t' }, 'Active / recent production')),
-        loading && !prods.length ? E(LoadingBlock) : recentProd.length === 0 ? E('div', { style: { fontSize: 12, color: 'var(--txt3)', padding: 10 } }, 'No production recorded yet.') :
-        E('div', { className: 'tw', style: { border: 'none', boxShadow: 'none' } }, E('table', null,
-          E('thead', null, E('tr', null, ['Tank', 'Product', 'Quantity', 'Status', 'Actual run time'].map(h => E('th', { key: h }, h)))),
-          E('tbody', null, recentProd.map(p => E('tr', { key: p.id }, E('td', null, E('strong', null, (tankSvc.getById(p.tankId) || {}).name || '-')), E('td', null, p.outProduct || p.inProduct, p.source === 'voucher' ? E('div', { style: { fontSize: 10, color: 'var(--txt3)' } }, p.no) : null),
-            E('td', null, qtyFmt(p.actualQty != null ? p.actualQty : (p.plannedQty > 0 ? p.plannedQty : p.inQty)) + ' ' + p.unit), E('td', null, E(StatusBadge, { s: p.status })), E('td', null, p.runSeconds == null ? '\u2014' : E('strong', { style: { color: '#7c3aed' } }, fmtDur(p.runSeconds))))))))),
-      E('div', { className: 'card' }, E('div', { className: 'card-hd' }, E('span', { className: 'card-t' }, 'Recent fill transactions')),
-        loading && !fills.length ? E(LoadingBlock) : recentFill.length === 0 ? E('div', { style: { fontSize: 12, color: 'var(--txt3)', padding: 10 } }, 'No fills recorded yet.') :
-        E('div', { className: 'tw', style: { border: 'none', boxShadow: 'none' } }, E('table', null,
-          E('thead', null, E('tr', null, ['Fill', 'From \u2192 To', 'Product', 'Qty', 'Status'].map(h => E('th', { key: h }, h)))),
-          E('tbody', null, recentFill.map(f => E('tr', { key: f.id }, E('td', null, E('strong', { style: { fontFamily: 'var(--mono)', fontSize: 11 } }, f.no)),
-            E('td', { style: { fontSize: 11 } }, locLabel(f.srcType, f.srcId) + ' \u2192 ' + locLabel(f.dstType, f.dstId)), E('td', null, f.product), E('td', null, qtyFmt(f.qty) + ' ' + f.unit), E('td', null, E(StatusBadge, { s: f.status }))))))))));
-}
-
 
 // ════════════════════════════════════════
-//  OPERATIONS DASHBOARD — settings, data, calculations
+//  PRODUCTION DASHBOARD — settings, data, calculations (Production data only)
 // ════════════════════════════════════════
 const OPS_DEFAULT_CFG = {
   title: 'LABSA OPERATIONS DASHBOARD', transferTitle: 'NSF TRANSFER',
@@ -8915,33 +8881,34 @@ const OPS_DEFAULT_CFG = {
     { name: 'LABSA 3 MT',   match: 'LABSA 3 MT',   target: 3,   unit: 'MT', recipe: [{ material: 'LAB', planned: 2.7 }, { material: 'Molten Sulphur', planned: 0.3 }, { material: 'Caustic Soda', planned: 0.15 }] },
     { name: 'LABSA 3.8 MT', match: 'LABSA 3.8 MT', target: 3.8, unit: 'MT', recipe: [{ material: 'LAB', planned: 2.9 }, { material: 'Molten Sulphur', planned: 0.4 }, { material: 'Caustic Soda', planned: 0.2 }] },
   ],
-  finalCategories: [],     // category ids counted as "final products" (auto-detected by name when empty)
-  capacities: {},          // item code -> capacity, used for the % bar in Material Stock
 };
+// dashboard settings live in prod_config (Production's own settings table)
 const opsCfgSvc = {
   _cfg: null, _err: null, _shared: false,
-  local() { try { const v = JSON.parse(localStorage.getItem('gs_ops_cfg') || 'null'); return v ? { ...OPS_DEFAULT_CFG, ...v } : null; } catch { return null; } },
+  local() { try { const v = JSON.parse(localStorage.getItem('gs_prod_ops_cfg') || 'null'); return v ? { ...OPS_DEFAULT_CFG, ...v } : null; } catch { return null; } },
   get() { return this._cfg || this.local() || OPS_DEFAULT_CFG; },
   async load() {
     try {
-      const rows = await sb.select('app_config', 'key=eq.ops_dashboard');
-      if (rows && rows[0]) { this._cfg = { ...OPS_DEFAULT_CFG, ...rows[0].value }; this._shared = true; try { localStorage.setItem('gs_ops_cfg', JSON.stringify(this._cfg)); } catch {} }
+      const rows = await sb.select('prod_config', 'key=eq.ops_dashboard');
+      if (rows && rows[0]) { this._cfg = { ...OPS_DEFAULT_CFG, ...rows[0].value }; this._shared = true; try { localStorage.setItem('gs_prod_ops_cfg', JSON.stringify(this._cfg)); } catch {} }
       this._err = null;
     } catch (e) { this._err = friendlyDbError(e); }
     return this.get();
   },
   async save(cfg, who) {
-    this._cfg = cfg; try { localStorage.setItem('gs_ops_cfg', JSON.stringify(cfg)); } catch {}
-    try { await sb.upsert('app_config', { key: 'ops_dashboard', value: cfg, updated_by: who || null, updated_at: new Date().toISOString() }, 'key'); this._err = null; this._shared = true; return { shared: true }; }
+    this._cfg = cfg; try { localStorage.setItem('gs_prod_ops_cfg', JSON.stringify(cfg)); } catch {}
+    try { await sb.upsert('prod_config', { key: 'ops_dashboard', value: cfg, updated_by: who || null, updated_at: new Date().toISOString() }, 'key'); this._err = null; this._shared = true; return { shared: true }; }
     catch (e) { this._err = friendlyDbError(e); this._shared = false; return { shared: false, error: this._err }; }
   },
 };
+
 
 // ── dates / shift windows (all LOCAL time) ──
 const localDate = d => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
 const addDays = (s, n) => { const x = new Date(s + 'T12:00:00'); x.setDate(x.getDate() + n); return localDate(x); };
 const clockOf = iso => { if (!iso) return ''; const d = new Date(iso); return isNaN(d) ? '' : pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };
 const tsOf = (dateStr, hm) => new Date(dateStr + 'T' + (hm && /^\d\d:\d\d/.test(hm) ? String(hm).slice(0, 5) : '12:00') + ':00');
+
 const opsWindow = (date, period, shift, cfg) => {
   const T = (d, hm) => new Date(d + 'T' + hm + ':00');
   const a = cfg.shiftDayFrom || '08:00', b = cfg.shiftDayTo || '20:00';
@@ -8961,42 +8928,32 @@ const inWin = (win, dateStr, hm) => { if (!dateStr) return false; const t = tsOf
 // ── formatting ──
 const MT_UNITS = ['MT', 'TON', 'TONS', 'TONNE', 'TONNES'];
 const qf = (n, unit) => { n = Number(n || 0); return MT_UNITS.includes(String(unit || '').toUpperCase()) ? n.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) : n.toLocaleString('en-US', { maximumFractionDigits: 3 }); };
-const locShort = (type, id) => type === 'store' ? ((whSvc.getById(id) || {}).name || 'Store') : ((tankSvc.getById(id) || {}).name || 'Tank');
 const nm = s => String(s || '').toLowerCase().trim();
 const nameHit = (name, key) => { const a = nm(name), b = nm(key); return !!b && a.includes(b); };
 
 // ── data (read-only; every stock number comes straight from Supabase) ──
+
+// ── data: Production tables only ──
 const opsSvc = {
-  _items: null, _at: 0,
-  async items() {
-    if (this._items && Date.now() - this._at < 60000) return this._items;
-    this._items = await pagedSelect('items', 'select=id,code,name,category,unit,warehouse_id,min_stock,status&order=name.asc');
-    this._at = Date.now(); return this._items;
-  },
   async load(win) {
-    const from = addDays(localDate(win.start), -1), to = addDays(localDate(win.end), 1), rng = `date=gte.${from}&date=lte.${to}`;
-    const [items, stock, grn, gin, trn] = await Promise.all([
-      this.items(),
-      pagedSelect('stock', 'select=item_id,warehouse_id,qty'),
-      pagedSelect('purchases', `select=id,grn_no,date,warehouse_id,approved_at,created_at,purchase_items(item_id,item_name,unit,qty_received)&status=eq.Approved&${rng}`),
-      pagedSelect('gin_vouchers', `select=id,gin_no,date,warehouse_id,issued_to,approved_at,created_at,gin_items(item_id,item_name,unit,qty_issued)&status=eq.Approved&${rng}`),
-      pagedSelect('stock_transfers', `select=id,trn_no,date,from_warehouse_id,to_warehouse_id,approved_at,created_at,transfer_items(item_id,unit,qty)&status=eq.Approved&${rng}`),
+    const from = addDays(localDate(win.start), -1), to = addDays(localDate(win.end), 1);
+    const [moves] = await Promise.all([
+      pagedSelect('prod_moves', `select=id,move_no,move_type,move_date,move_time,created_at,location_type,location_id,item_id,product_name,unit,qty&move_date=gte.${from}&move_date=lte.${to}`),
+      prodItemSvc.loadAll(), prodCatSvc.loadAll(), prodLocSvc.loadAll(), prodStockSvc.loadAll(),
     ]);
-    return { items, stock, grn, gin, trn };
+    return { moves: moves.map(r => ({ ...r, qty: Number(r.qty) })) };
   },
 };
 
-// ── turn raw records into the nine panels ──
+// ── turn Production records into the nine panels ──
 function opsCompute(D, cfg, o) {
-  const { win, user, isSA, whId } = o;
-  const whOk = id => !whId || id === whId;
-  const itemById = new Map(D.items.map(i => [i.id, i]));
-  const cats = catSvc.getAll(); const catName = id => (cats.find(c => c.id === id) || {}).name || id || 'Other';
+  const { win } = o;
+  const items = prodItemSvc.getAll(), itemById = new Map(items.map(i => [i.id, i]));
+  const cats = prodCatSvc.getAll(), catName = id => (cats.find(c => c.id === id) || {}).name || 'Other';
+  const finalCats = new Set(cats.filter(c => c.isFinal).map(c => c.id));
   const runClock = r => r.endTime ? fmtTime(r.endTime) : r.startTime ? fmtTime(r.startTime) : clockOf(r.completedAt || r.createdAt);
   const runTs = r => tsOf(r.date, runClock(r));
-
-  // runs = Tank Production runs + Production vouchers, inside the window
-  const runsW = unifiedRuns(user, isSA).filter(r => r.status !== 'Cancelled' && inWin(win, r.date, runClock(r)));
+  const runsW = unifiedRuns().filter(r => r.status !== 'Cancelled' && inWin(win, r.date, runClock(r)));
   const done = runsW.filter(r => r.status === 'Completed');
 
   // 1 PRODUCTION
@@ -9017,75 +8974,68 @@ function opsCompute(D, cfg, o) {
   const withTarget = cards.filter(c => c.target > 0), total = cards.reduce((s, c) => s + c.produced, 0);
   const minPct = withTarget.length ? Math.min(...withTarget.map(c => c.pct)) : null;
   const status = total <= 0 ? 'No production' : minPct == null ? 'Recorded' : minPct >= 100 ? 'On Track' : minPct >= 70 ? 'In Progress' : 'Behind';
-  const prod = { cards, total, unit: (cards[0] && cards[0].unit) || '', batches: matched.size, eff: effPlan > 0 ? effOut / effPlan * 100 : (withTarget.length && total > 0 ? total / withTarget.reduce((s, c) => s + c.target, 0) * 100 : null), status };
+  const prod = { cards, total, unit: (cards[0] && cards[0].unit) || '', batches: matched.size,
+    eff: effPlan > 0 ? effOut / effPlan * 100 : (withTarget.length && total > 0 ? total / withTarget.reduce((s, c) => s + c.target, 0) * 100 : null), status };
 
   // 2 RUNNING HR
   const totalSecs = runsW.reduce((s, r) => s + (r.runSeconds || 0), 0);
   const latest = [...runsW].sort((a, b) => runTs(b) - runTs(a))[0] || null;
   const run = { totalSecs, latest, util: win.hours > 0 ? Math.min(100, totalSecs / (win.hours * 3600) * 100) : 0, count: runsW.length };
 
-  // 3 MATERIAL RECEIVED (approved GRVs, grouped by item category)
+  // receipts / dispatch (Production's own movements)
+  const moveClock = m => m.move_time ? fmtTime(m.move_time) : clockOf(m.created_at);
+  const inMoves = type => D.moves.filter(m => m.move_type === type && inWin(win, m.move_date, moveClock(m)));
+
+  // 3 MATERIAL RECEIVED
   const groups = new Map();
-  D.grn.filter(v => whOk(v.warehouse_id) && inWin(win, v.date, clockOf(v.approved_at || v.created_at))).forEach(v => (v.purchase_items || []).forEach(l => {
-    const it = itemById.get(l.item_id) || {}, c = it.category || 'Other', n = it.name || l.item_name || '-';
+  inMoves('RECEIPT').forEach(m => {
+    const it = itemById.get(m.item_id) || {}, c = it.categoryId || 'Other', n = it.name || m.product_name || '-';
     if (!groups.has(c)) groups.set(c, { id: c, name: catName(c), items: new Map(), lines: 0 });
-    const g = groups.get(c); g.lines++; const cur = g.items.get(n) || { name: n, unit: l.unit || it.unit, qty: 0 }; cur.qty += Number(l.qty_received || 0); g.items.set(n, cur);
-  }));
+    const g = groups.get(c); g.lines++; const cur = g.items.get(n) || { name: n, unit: m.unit || it.unit, qty: 0 }; cur.qty += Number(m.qty || 0); g.items.set(n, cur);
+  });
   const pri = n => /raw/i.test(n) ? 0 : /pack/i.test(n) ? 1 : /util/i.test(n) ? 2 : 3;
   const recv = [...groups.values()].sort((a, b) => pri(a.name) - pri(b.name) || b.lines - a.lines).slice(0, 3)
     .map(g => ({ id: g.id, name: g.name, items: [...g.items.values()].sort((a, b) => b.qty - a.qty) }));
 
-  // 4 TRANSFERS (completed fills + approved warehouse transfers)
+  // 4 TRANSFERS = completed fills
   const trnRows = [];
-  fillSvc.getAll().filter(f => f.status === 'Completed' && inScopeFill(f, user, isSA)).forEach(f => {
+  fillSvc.getAll().filter(f => f.status === 'Completed').forEach(f => {
     const hm = f.time ? fmtTime(f.time) : clockOf(f.completedAt);
     if (inWin(win, f.date, hm)) trnRows.push({ key: 'f' + f.id, from: locShort(f.srcType, f.srcId), to: locShort(f.dstType, f.dstId), material: f.product, qty: f.qty, unit: f.unit, time: hm, ts: tsOf(f.date, hm) });
   });
-  D.trn.filter(v => (whOk(v.from_warehouse_id) || whOk(v.to_warehouse_id))).forEach(v => {
-    const hm = clockOf(v.approved_at || v.created_at); if (!inWin(win, v.date, hm)) return;
-    const ls = v.transfer_items || [], first = itemById.get((ls[0] || {}).item_id) || {};
-    trnRows.push({ key: 't' + v.id, from: locShort('store', v.from_warehouse_id), to: locShort('store', v.to_warehouse_id), material: (first.name || '-') + (ls.length > 1 ? ' +' + (ls.length - 1) : ''), qty: ls.reduce((s, l) => s + Number(l.qty || 0), 0), unit: (ls[0] || {}).unit || first.unit || '', time: hm, ts: tsOf(v.date, hm) });
-  });
   trnRows.sort((a, b) => b.ts - a.ts);
 
-  // 5/6 RAW MATERIAL CONSUMPTION per product: planned (recipe) vs consumed (raw lines of matched runs)
-  const cons = (cfg.products || []).map((p, idx) => {
+  // 5/6 CONSUMPTION per product
+  const cons = (cfg.products || []).map(p => {
     const rs = done.filter(r => nameHit(r.outProduct, p.match || p.name)), used = new Map();
     rs.forEach(r => (r.rawLines || []).forEach(l => { const k = l.name || '-'; const c = used.get(k) || { name: k, qty: 0, unit: l.unit }; c.qty += Number(l.qty || 0); used.set(k, c); }));
     const rows = (p.recipe || []).filter(x => x.material).map(x => {
       const hit = [...used.values()].filter(u => nameHit(u.name, x.material)); hit.forEach(h => used.delete(h.name));
-      const consumed = hit.reduce((s, h) => s + h.qty, 0), planned = (Number(x.planned) || 0) * win.days;
-      return { material: x.material, planned, consumed, balance: planned - consumed, pct: planned > 0 ? consumed / planned * 100 : null, unit: (hit[0] && hit[0].unit) || p.unit || '' };
+      const consumed = hit.reduce((s, h) => s + h.qty, 0), plannedQ = (Number(x.planned) || 0) * win.days;
+      return { material: x.material, planned: plannedQ, consumed, balance: plannedQ - consumed, pct: plannedQ > 0 ? consumed / plannedQ * 100 : null, unit: (hit[0] && hit[0].unit) || p.unit || '' };
     });
     [...used.values()].forEach(u => rows.push({ material: u.name, planned: null, consumed: u.qty, balance: null, pct: null, unit: u.unit }));
     return { name: p.name, unit: p.unit || '', rows, runs: rs.length };
   });
 
-  // 7 DISPATCH (approved GINs, grouped by item)
+  // 7 DISPATCH
   const dm = new Map();
-  D.gin.filter(v => whOk(v.warehouse_id) && inWin(win, v.date, clockOf(v.approved_at || v.created_at))).forEach(v => (v.gin_items || []).forEach(l => {
-    const it = itemById.get(l.item_id) || {}, n = it.name || l.item_name || '-', c = dm.get(n) || { name: n, unit: l.unit || it.unit, qty: 0 }; c.qty += Number(l.qty_issued || 0); dm.set(n, c);
-  }));
+  inMoves('DISPATCH').forEach(m => { const n = (itemById.get(m.item_id) || {}).name || m.product_name || '-', c = dm.get(n) || { name: n, unit: m.unit, qty: 0 }; c.qty += Number(m.qty || 0); dm.set(n, c); });
   const disp = [...dm.values()].sort((a, b) => b.qty - a.qty);
 
-  // 8 MATERIAL STOCK (items + tanks)
-  const stockByItem = new Map(); D.stock.forEach(s => stockByItem.set(s.item_id, (stockByItem.get(s.item_id) || 0) + Number(s.qty || 0)));
-  const byCode = new Map();
-  D.items.filter(i => i.status === 'Active' && whOk(i.warehouse_id)).forEach(i => {
-    const k = i.code || i.name, c = byCode.get(k) || { key: 'i:' + k, name: i.name, unit: i.unit, category: i.category, qty: 0, cap: Number((cfg.capacities || {})[i.code]) || 0, kind: 'item' };
-    c.qty += stockByItem.get(i.id) || 0; byCode.set(k, c);
-  });
-  const tankRows = tanksFor(user, isSA).filter(t => t.status !== 'Disabled').map(t => ({ key: 't:' + t.id, name: t.name, unit: t.unit, category: (itemById.get(t.itemId) || {}).category || null, qty: t.qty, cap: t.capacity, kind: 'tank', product: t.product }));
-  const itemRows = [...byCode.values()].filter(r => r.qty > 0 || r.cap > 0).sort((a, b) => (b.cap > 0) - (a.cap > 0) || b.qty - a.qty);
+  // 8 MATERIAL STOCK (Production items in locations + tanks)
+  const perItem = new Map(); prodStockSvc.all().forEach(r => perItem.set(r.itemId, (perItem.get(r.itemId) || 0) + r.qty));
+  const itemRows = items.filter(i => i.status === 'Active').map(i => ({ key: 'i:' + i.id, name: i.name, unit: i.unit, category: i.categoryId, qty: perItem.get(i.id) || 0, cap: i.capacity, kind: 'item' }))
+    .filter(r => r.qty > 0 || r.cap > 0).sort((a, b) => (b.cap > 0) - (a.cap > 0) || b.qty - a.qty);
+  const tankRows = tankSvc.getAll().filter(t => t.status !== 'Disabled').map(t => ({ key: 't:' + t.id, name: t.name, unit: t.unit, category: (itemById.get(t.itemId) || {}).categoryId || null, qty: t.qty, cap: t.capacity, kind: 'tank', product: t.product }));
   const stockRows = [...tankRows, ...itemRows].map(r => ({ ...r, pct: r.cap > 0 ? r.qty / r.cap * 100 : null, catName: r.category ? catName(r.category) : 'Tanks' }));
   const stockTabs = ['All Materials', ...[...new Set(stockRows.map(r => r.catName))].slice(0, 6)];
 
-  // 9 FINAL PRODUCTS (tank contents + stock of final-product categories) and tank-wise stock
-  const fcats = new Set((cfg.finalCategories && cfg.finalCategories.length) ? cfg.finalCategories : cats.filter(c => /final|finish|product/i.test(c.name)).map(c => c.id));
+  // 9 FINAL PRODUCTS (categories flagged "final" in Production Masters)
+  const isFinalTank = t => finalCats.size === 0 || finalCats.has(t.category);
   const fm = new Map();
-  const isFinalTank = t => fcats.size === 0 || fcats.has(t.category);
   tankRows.filter(t => t.qty > 0 && isFinalTank(t)).forEach(t => { const k = t.product || t.name; const c = fm.get(k) || { name: k, unit: t.unit, qty: 0 }; c.qty += t.qty; fm.set(k, c); });
-  byCode.forEach(r => { if (r.qty > 0 && fcats.has(r.category)) { const c = fm.get(r.name) || { name: r.name, unit: r.unit, qty: 0 }; c.qty += r.qty; fm.set(r.name, c); } });
+  itemRows.forEach(r => { if (r.qty > 0 && finalCats.has(r.category)) { const c = fm.get(r.name) || { name: r.name, unit: r.unit, qty: 0 }; c.qty += r.qty; fm.set(r.name, c); } });
   const allF = [...fm.values()].sort((a, b) => b.qty - a.qty), uc = new Map(); allF.forEach(r => uc.set(r.unit, (uc.get(r.unit) || 0) + 1));
   const domUnit = [...uc.entries()].sort((a, b) => b[1] - a[1])[0]; const finalRows = allF.filter(r => !domUnit || r.unit === domUnit[0]);
   const fin = { rows: finalRows, unit: domUnit ? domUnit[0] : '', total: finalRows.reduce((s, r) => s + r.qty, 0), hidden: allF.length - finalRows.length,
@@ -9094,9 +9044,7 @@ function opsCompute(D, cfg, o) {
   return { prod, run, recv, trn: trnRows, cons, disp, stock: stockRows, stockTabs, fin };
 }
 
-// ════════════════════════════════════════
-//  OPERATIONS DASHBOARD — screen
-// ════════════════════════════════════════
+
 const OPS_NUM_COLORS = ['#2563eb', '#7c3aed', '#f97316', '#ec4899', '#16a34a', '#16a34a', '#8b5cf6', '#2563eb', '#f59e0b'];
 const OPS_PALETTE = ['#2563eb', '#16a34a', '#06b6d4', '#f59e0b', '#22c55e', '#8b5cf6', '#ef4444', '#f97316', '#0ea5e9', '#84cc16'];
 
@@ -9134,23 +9082,20 @@ function Donut({ rows }) {
   return E('canvas', { ref });
 }
 
+
 function OpsConfig({ cfg, onClose, onSaved }) {
   const { toast, user } = useCtx();
   const [c, setC] = useState(() => JSON.parse(JSON.stringify(cfg)));
-  const [q, setQ] = useState(''); const [items, setItems] = useState([]); const [busy, setBusy] = useState(false); const lock = useRef(false);
-  useEffect(() => { opsSvc.items().then(setItems).catch(() => {}); }, []);
-  const cats = catSvc.getAll();
+  const [busy, setBusy] = useState(false); const lock = useRef(false);
   const upd = (path, v) => setC(p => { const n = JSON.parse(JSON.stringify(p)); let o = n; for (let i = 0; i < path.length - 1; i++) o = o[path[i]]; o[path[path.length - 1]] = v; return n; });
   const addProduct = () => setC(p => ({ ...p, products: [...p.products, { name: '', match: '', target: 0, unit: 'MT', recipe: [] }] }));
   const delProduct = i => setC(p => ({ ...p, products: p.products.filter((_, k) => k !== i) }));
-  const uniq = []; const seen = new Set(); items.forEach(i => { if (i.code && !seen.has(i.code)) { seen.add(i.code); uniq.push(i); } });
-  const shown = uniq.filter(i => !q || (i.code + ' ' + i.name).toLowerCase().includes(q.toLowerCase())).slice(0, 40);
   const save = async () => {
     if (lock.current) return; lock.current = true; setBusy(true);
     const clean = { ...c, products: c.products.filter(p => p.name.trim()).map(p => ({ ...p, name: p.name.trim(), match: (p.match || p.name).trim(), target: Number(p.target) || 0, recipe: (p.recipe || []).filter(r => r.material.trim()).map(r => ({ material: r.material.trim(), planned: Number(r.planned) || 0 })) })),
-      capacities: Object.fromEntries(Object.entries(c.capacities || {}).filter(([, v]) => Number(v) > 0).map(([k, v]) => [k, Number(v)])) };
+    };
     const res = await opsCfgSvc.save(clean, user && user.name);
-    toast(res.shared ? 'Dashboard settings saved for everyone' : 'Saved on this device only \u2014 run the updated SQL file so the settings are shared', res.shared ? 'success' : 'warning');
+    toast(res.shared ? 'Dashboard settings saved for everyone' : 'Saved on this device only \u2014 run solopos_production_app.sql so the settings are shared', res.shared ? 'success' : 'warning');
     onSaved(clean);
   };
   const lbl = t => E('label', { className: 'flbl' }, t);
@@ -9176,22 +9121,12 @@ function OpsConfig({ cfg, onClose, onSaved }) {
       E('div', { style: { display: 'flex', gap: 8 } }, E('button', { className: 'btn btn-outline btn-xs', onClick: () => upd(['products', i, 'recipe'], [...(p.recipe || []), { material: '', planned: 0 }]) }, '+ Material'),
         E('button', { className: 'btn btn-danger btn-xs', onClick: () => delProduct(i) }, 'Remove product')))),
     E('button', { className: 'btn btn-outline btn-sm', onClick: addProduct }, '+ Add product'),
-    E('div', { className: 'card-t', style: { margin: '14px 0 4px' } }, 'Final products (donut chart)'),
-    E('div', { style: { fontSize: 11, color: 'var(--txt3)', marginBottom: 6 } }, 'Tick the categories that hold final products. Tanks whose product is in one of them (and store stock of those items) fill the donut and the Tank wise stock list. If none are ticked, categories named Final / Finished / Product are used; if there are none, all tanks are shown.'),
-    E('div', { style: { display: 'flex', gap: 10, flexWrap: 'wrap' } }, cats.filter(x => !x.parentId).map(x => E('label', { key: x.id, style: { fontSize: 12, display: 'flex', gap: 5, alignItems: 'center' } },
-      E('input', { type: 'checkbox', checked: (c.finalCategories || []).includes(x.id), onChange: e => upd(['finalCategories'], e.target.checked ? [...(c.finalCategories || []), x.id] : c.finalCategories.filter(z => z !== x.id)) }), x.name))),
-    E('div', { className: 'card-t', style: { margin: '14px 0 4px' } }, 'Stock capacities (for the % bar in Material Stock)'),
-    E('div', { style: { fontSize: 11, color: 'var(--txt3)', marginBottom: 6 } }, 'Tanks use their own capacity. Enter a capacity here for any other item you want shown with a % bar.'),
-    E('input', { className: 'fi', placeholder: 'Search item\u2026', value: q, onChange: e => setQ(e.target.value), style: { marginBottom: 6 } }),
-    E('div', { style: { maxHeight: 190, overflow: 'auto', border: '1px solid var(--border)', borderRadius: 8 } },
-      shown.length === 0 ? E('div', { style: { padding: 10, fontSize: 12, color: 'var(--txt3)' } }, items.length ? 'No items match' : 'Loading items\u2026') :
-      shown.map(i => E('div', { key: i.code, style: { display: 'flex', gap: 8, alignItems: 'center', padding: '4px 10px', borderBottom: '1px solid var(--border)', fontSize: 12 } },
-        E('span', { style: { flex: 1, minWidth: 0 } }, E('strong', null, i.code), ' ', i.name), E('span', { style: { color: 'var(--txt3)' } }, i.unit),
-        E('input', { className: 'fi', type: 'number', min: 0, step: 'any', style: { width: 110 }, placeholder: 'Capacity', value: (c.capacities || {})[i.code] || '', onChange: e => upd(['capacities', i.code], e.target.value) })))));
+    E('div', { className: 'alert alert-blue', style: { marginTop: 12, marginBottom: 0 } }, E(Ic, { n: 'info', s: 13 }), 'Stock capacities and which categories count as "final products" are set in Masters (Items and Categories).'));
 }
 
-function OpsDashboard({ onClassic }) {
-  const { user, isSA, whId, nav, setModal } = useCtx();
+
+function OpsDashboard() {
+  const { user, isSA, nav, setModal } = useCtx(); const whId = null;
   const [date, setDate] = useState(today()); const [period, setPeriod] = useState('day'); const [shift, setShift] = useState('all');
   const [cfg, setCfg] = useState(opsCfgSvc.get()); const [D, setD] = useState(null); const [err, setErr] = useState(''); const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('All Materials'); const [tick, setTick] = useState(0);
@@ -9199,13 +9134,13 @@ function OpsDashboard({ onClassic }) {
   const win = useMemo(() => opsWindow(date, period, shift, cfg), [date, period, shift, cfg.shiftDayFrom, cfg.shiftDayTo]);
   useEffect(() => {
     let live = true; setLoading(true); setErr('');
-    Promise.all([opsCfgSvc.load(), opsSvc.load(win), tankSvc.loadAll(), tprodSvc.loadAll(), fillSvc.loadAll(), proSvc.loadAll(), proLinesSvc.load(), catSvc.loadAll ? catSvc.loadAll().catch(() => {}) : null])
+    Promise.all([opsCfgSvc.load(), opsSvc.load(win), tankSvc.loadAll(), tprodSvc.loadAll(), fillSvc.loadAll()])
       .then(([c, d]) => { if (!live) return; setCfg(c); setD(d); setLoading(false); })
       .catch(e => { if (!live) return; setErr(friendlyDbError(e)); setLoading(false); });
     return () => { live = false; };
   }, [win.start.getTime(), win.end.getTime(), whId, tick]);
 
-  const M = useMemo(() => D ? opsCompute(D, cfg, { win, user, isSA, whId }) : null, [D, cfg, win, tick, loading]);
+  const M = useMemo(() => { if (!D) return null; const m = opsCompute(D, cfg, { win }); const ts = tankSvc.getAll(); m.tanks = { total: ts.length, available: ts.filter(t => t.status === 'Available').length, processing: ts.filter(t => t.status === 'Processing').length, maintenance: ts.filter(t => t.status === 'Maintenance').length, fillsToday: fillSvc.todayCount() }; return m; }, [D, cfg, win, tick, loading]);
   const stockTab = M && M.stockTabs.includes(tab) ? tab : 'All Materials';
   const stockRows = M ? M.stock.filter(r => stockTab === 'All Materials' || r.catName === stockTab) : [];
   const openCfg = () => setModal(E(OpsConfig, { cfg, onClose: () => setModal(null), onSaved: c => { setCfg(c); setModal(null); setTick(t => t + 1); } }));
@@ -9222,11 +9157,15 @@ function OpsDashboard({ onClassic }) {
       E('select', { className: 'ops-ctl', value: shift, disabled: period !== 'day', onChange: e => setShift(e.target.value), title: 'Shift' }, Object.entries(shiftLabel).map(([k, v]) => E('option', { key: k, value: k }, v))),
       E('button', { className: 'ops-ctl ops-btn', onClick: () => setTick(t => t + 1), title: 'Refresh' }, '\u21bb'),
       mgr ? E('button', { className: 'ops-ctl ops-btn', onClick: openCfg }, '\u2699 Settings') : null,
-      E('button', { className: 'ops-ctl ops-btn', onClick: onClassic }, 'Classic view')),
+      null),
     err ? E('div', { className: 'alert alert-red', style: { marginBottom: 12 } }, E(Ic, { n: 'alert', s: 13 }), err) : null,
-    opsCfgSvc._err && !opsCfgSvc._shared ? E('div', { className: 'alert alert-amber', style: { marginBottom: 12 } }, E(Ic, { n: 'alert', s: 13 }), 'Targets and settings are stored on this device only \u2014 run the updated SQL file to share them with everyone.') : null,
+    opsCfgSvc._err && !opsCfgSvc._shared ? E('div', { className: 'alert alert-amber', style: { marginBottom: 12 } }, E(Ic, { n: 'alert', s: 13 }), 'Targets and settings are stored on this device only \u2014 run solopos_production_app.sql to share them with everyone.') : null,
     !M ? E(LoadingBlock, { text: 'Loading operations data\u2026' }) : E(React.Fragment, null,
       loading ? E('div', { className: 'ops-refreshing' }, 'Updating\u2026') : null,
+
+      E('div', { className: 'ops-kpis' },
+        [['Total tanks', M.tanks.total, '#2563eb'], ['Available', M.tanks.available, '#16a34a'], ['Running / processing', M.tanks.processing, '#f59e0b'], ['Maintenance', M.tanks.maintenance, '#7c3aed'], ['Fills today', M.tanks.fillsToday, '#0891b2']]
+          .map(([l, v, c]) => E('div', { key: l, className: 'ops-kpi', style: { borderLeft: '3px solid ' + c, cursor: 'pointer' }, onClick: () => nav(l === 'Fills today' ? 'fill' : 'tanks') }, E('b', { style: { color: c } }, v), E('span', null, l)))),
 
       // ── row 1 ──
       E('div', { className: 'ops-grid ops-r1' },
@@ -9257,12 +9196,12 @@ function OpsDashboard({ onClassic }) {
               .map(([k, v]) => E('div', { key: k }, E('div', { className: 'ops-sub' }, k), E('b', null, v))))),
 
         E(OpsCard, { n: 3, title: 'Material Received', right: E('span', { className: 'ops-pill' }, win.label) },
-          M.recv.length === 0 ? E('div', { className: 'ops-empty' }, 'No goods received in this period') :
+          M.recv.length === 0 ? E('div', { className: 'ops-empty' }, 'No receipts in this period') :
           E('div', { className: 'ops-recv' }, M.recv.map((g, i) => E('div', { key: g.id, className: 'ops-sub-card' },
             E('div', { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 } }, E(OpsIcon, { n: i === 0 ? 'flask' : i === 1 ? 'items' : 'fire', color: ['#2563eb', '#f97316', '#d97706'][i], s: 18 }), E('b', { style: { fontSize: 12 } }, g.name)),
             g.items.slice(0, 4).map(it => E('div', { key: it.name, className: 'ops-line' }, E('span', null, it.name), E('b', null, qf(it.qty, it.unit) + ' ' + it.unit))),
             g.items.length > 4 ? E('div', { className: 'ops-sub' }, '+' + (g.items.length - 4) + ' more') : null))),
-          E('div', { style: { textAlign: 'right', marginTop: 10 } }, goBtn('View All GRV', 'grn')))),
+          E('div', { style: { textAlign: 'right', marginTop: 10 } }, goBtn('View Receipts', 'receipts')))),
 
       // ── row 2 ──
       E('div', { className: 'ops-grid ops-r2' },
@@ -9280,12 +9219,12 @@ function OpsDashboard({ onClassic }) {
                 E('div', { className: 'ops-scroll', style: { maxHeight: 190 } }, E('table', { className: 'ops-tbl' }, E('thead', null, E('tr', null, ['Material', 'Planned', 'Consumed', 'Balance', '%'].map(h => E('th', { key: h }, h)))),
                   E('tbody', null, c.rows.map(r => E('tr', { key: r.material }, E('td', null, r.material), E('td', null, r.planned == null ? '\u2014' : qf(r.planned, r.unit)), E('td', null, E('b', null, qf(r.consumed, r.unit))),
                     E('td', null, r.balance == null ? '\u2014' : qf(r.balance, r.unit)), E('td', { style: { color: pctColor(r.pct), fontWeight: 700 } }, r.pct == null ? '\u2014' : r.pct.toFixed(0) + '%')))))),
-                E('div', { style: { textAlign: 'right', marginTop: 10 } }, E('button', { className: 'btn btn-primary btn-sm', onClick: () => nav('production') }, 'Details'))))),
+                E('div', { style: { textAlign: 'right', marginTop: 10 } }, E('button', { className: 'btn btn-primary btn-sm', onClick: () => nav('runs') }, 'Details'))))),
 
         E(OpsCard, { n: 7, title: 'Dispatch', right: E('span', { className: 'ops-pill' }, win.label) },
           M.disp.length === 0 ? E('div', { className: 'ops-empty' }, 'Nothing dispatched in this period') :
           E('div', null, M.disp.slice(0, 4).map((d, i) => E('div', { key: d.name, className: 'ops-disp' }, E(OpsIcon, { n: ['flask', 'flask', 'items', 'tank'][i], color: ['#2563eb', '#2563eb', '#0891b2', '#0891b2'][i], s: 16 }), E('span', { style: { flex: 1, minWidth: 0 } }, d.name), E('b', null, qf(d.qty, d.unit) + ' ' + d.unit)))),
-          E('div', { style: { textAlign: 'right', marginTop: 10 } }, goBtn('View Dispatch', 'gin')))),
+          E('div', { style: { textAlign: 'right', marginTop: 10 } }, goBtn('View Dispatch', 'dispatch')))),
 
       // ── row 3 ──
       E('div', { className: 'ops-grid ops-r3' },
@@ -9311,12 +9250,377 @@ function OpsDashboard({ onClassic }) {
                 E('tbody', null, M.fin.tanks.length === 0 ? E('tr', null, E('td', { colSpan: 3 }, 'No tanks')) : M.fin.tanks.map(t => E('tr', { key: t.id }, E('td', null, t.name), E('td', null, t.product), E('td', null, E('b', null, qf(t.qty, t.unit) + ' ' + t.unit)))))))))))));
 }
 
-// Chooses between the new operations view (default) and the original dashboard
-function DashboardSwitch() {
-  const [mode, setMode] = useState(() => { try { return localStorage.getItem('gs_dash_view') || 'ops'; } catch { return 'ops'; } });
-  const pick = m => { try { localStorage.setItem('gs_dash_view', m); } catch {} setMode(m); };
-  if (mode === 'ops') return E(OpsDashboard, { onClassic: () => pick('classic') });
-  return E('div', null, E('div', { style: { display: 'flex', justifyContent: 'flex-end', marginBottom: 8 } }, E('button', { className: 'btn btn-outline btn-sm', onClick: () => pick('ops') }, '\u25a6 Operations view')), E(Dashboard));
+
+
+// ════════════════════════════════════════
+//  PRODUCTION — receipts, dispatch, stock, masters, users
+// ════════════════════════════════════════
+function MoveForm({ type, onClose, onSaved }) {
+  const { toast, user } = useCtx();
+  const isRcp = type === 'RECEIPT';
+  const locs = prodLocSvc.getAll().filter(l => l.status === 'Active');
+  const tanks = tankSvc.getAll().filter(t => !['Disabled', 'Maintenance'].includes(t.status));
+  const items = catalogSvc.get();
+  const token = useRef(uid() + uid()), lock = useRef(false);
+  const [busy, setBusy] = useState(false); const [err, setErr] = useState('');
+  const [f, setF] = useState({ locType: 'location', locId: (locs[0] || {}).id || '', itemId: '', qty: '', party: '', reference: '', date: today(), time: nowHM(), remarks: '' });
+  const set = (k, v) => setF(p => ({ ...p, [k]: v }));
+  const tank = f.locType === 'tank' ? tankSvc.getById(f.locId) : null;
+  const lockedItem = tank && tank.qty > 0 ? tank.itemId : (tank && !isRcp ? tank.itemId : null);   // a tank holds ONE product
+  const itemId = lockedItem || f.itemId;
+  const item = prodItemSvc.getById(itemId);
+  const qty = Number(f.qty) || 0;
+  const avail = !item ? 0 : f.locType === 'tank' ? (tank ? tank.qty : 0) : prodStockSvc.getQty(itemId, f.locId);
+  const free = tank && tank.capacity > 0 ? tank.capacity - tank.qty : null;
+  const problems = [];
+  if (!f.locId) problems.push('Choose a ' + (f.locType === 'tank' ? 'tank' : 'location'));
+  if (!item) problems.push('Choose a product');
+  if (!(qty > 0)) problems.push('Enter a quantity');
+  else { if (!isRcp && qty > avail) problems.push('Only ' + qtyFmt(avail) + ' ' + (item ? item.unit : '') + ' available'); if (isRcp && free != null && qty > free) problems.push('Tank has only ' + qtyFmt(free) + ' ' + tank.unit + ' free'); }
+  if (!isRcp && tank && !tank.itemId) problems.push('This tank is empty');
+  const save = async () => {
+    if (lock.current) return; if (problems.length) { setErr(problems[0]); return; }
+    lock.current = true; setBusy(true); setErr('');
+    try { const m = await moveSvc.create({ token: token.current, type, locType: f.locType, locId: f.locId, itemId, qty, date: f.date, time: f.time, party: f.party, reference: f.reference, remarks: f.remarks, user: user && user.name }); toast((isRcp ? 'Receipt ' : 'Dispatch ') + m.no + ' recorded \u2014 stock updated', 'success'); onSaved(); }
+    catch (e) { setErr(e.message); lock.current = false; setBusy(false); }
+  };
+  return E(Modal, { title: isRcp ? 'New Receipt \u2014 stock in' : 'New Dispatch \u2014 stock out', onClose, size: 'lg',
+    footer: E(React.Fragment, null, E('button', { className: 'btn btn-outline', onClick: onClose, disabled: busy }, 'Cancel'), E('button', { className: 'btn ' + (isRcp ? 'btn-success' : 'btn-primary'), onClick: save, disabled: busy }, busy ? 'Saving\u2026' : (isRcp ? 'Record receipt' : 'Record dispatch'))) },
+    E('div', { className: 'fg' }, E('label', { className: 'flbl' }, isRcp ? 'Received into' : 'Dispatched from'),
+      E('div', { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+        E('select', { className: 'fi', style: { flex: '0 0 130px' }, value: f.locType, onChange: e => setF(p => ({ ...p, locType: e.target.value, locId: e.target.value === 'tank' ? ((tanks[0] || {}).id || '') : ((locs[0] || {}).id || ''), itemId: '' })) }, E('option', { value: 'location' }, 'Location'), E('option', { value: 'tank' }, 'Tank')),
+        E('select', { className: 'fi', style: { flex: 1, minWidth: 160 }, value: f.locId, onChange: e => set('locId', e.target.value) },
+          f.locType === 'tank' ? (tanks.length ? tanks.map(t => E('option', { key: t.id, value: t.id }, t.name + ' (' + t.code + ') \u2014 ' + (t.product ? qtyFmt(t.qty) + ' ' + t.unit + ' ' + t.product : 'empty'))) : E('option', { value: '' }, 'No tanks'))
+            : (locs.length ? locs.map(l => E('option', { key: l.id, value: l.id }, l.name + ' (' + l.code + ')')) : E('option', { value: '' }, 'No locations \u2014 add one in Masters'))))),
+    E('div', { className: 'frow' },
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Product *'),
+        lockedItem ? E('div', { className: 'fi', style: { background: 'var(--off2)', display: 'flex', alignItems: 'center' } }, (tank && tank.product) || '', E('span', { style: { marginLeft: 'auto', fontSize: 10, color: 'var(--txt3)' } }, 'a tank holds one product'))
+          : E('select', { className: 'fi', value: f.itemId, onChange: e => set('itemId', e.target.value) }, E('option', { value: '' }, items.length ? 'Select product\u2026' : 'No products \u2014 add them in Masters'), items.map(i => E('option', { key: i.id, value: i.id }, i.code + ' \u2014 ' + i.name + ' (' + i.unit + ')')))),
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Quantity' + (item ? ' (' + item.unit + ')' : '') + ' *'), E('input', { className: 'fi', type: 'number', min: 0, step: 'any', value: f.qty, style: { fontWeight: 800, fontSize: 16 }, onChange: e => set('qty', e.target.value) }),
+        !isRcp && item ? E('div', { style: { fontSize: 10, color: 'var(--txt3)', marginTop: 2 } }, 'Available: ' + qtyFmt(avail) + ' ' + item.unit) : (free != null ? E('div', { style: { fontSize: 10, color: 'var(--txt3)', marginTop: 2 } }, 'Free space: ' + qtyFmt(free) + ' ' + tank.unit) : null))),
+    E('div', { className: 'frow' },
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, isRcp ? 'Supplier / source' : 'Customer / destination'), E('input', { className: 'fi', value: f.party, onChange: e => set('party', e.target.value) })),
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, isRcp ? 'Delivery note / invoice no.' : 'Delivery note / invoice no.'), E('input', { className: 'fi', value: f.reference, onChange: e => set('reference', e.target.value) }))),
+    E('div', { className: 'frow' },
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Date *'), E('input', { className: 'fi', type: 'date', value: f.date, onChange: e => set('date', e.target.value) })),
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Time'), E('input', { className: 'fi', type: 'time', value: f.time, onChange: e => set('time', e.target.value) }))),
+    E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Remarks'), E('textarea', { className: 'fi', rows: 2, value: f.remarks, onChange: e => set('remarks', e.target.value) })),
+    err ? E('div', { className: 'alert alert-red', style: { marginBottom: 0 } }, E(Ic, { n: 'alert', s: 13 }), err) : null);
+}
+
+function MovesPage({ type }) {
+  const { setModal, reload } = useCtx();
+  const isRcp = type === 'RECEIPT';
+  const { loading } = useLoad([() => moveSvc.loadAll(), () => tankSvc.loadAll(), () => prodLocSvc.loadAll(), () => prodItemSvc.loadAll(), () => prodStockSvc.loadAll()]);
+  const [q, setQ] = useState(''); const [from, setFrom] = useState(''); const [to, setTo] = useState('');
+  const all = moveSvc.getAll().filter(m => m.type === type);
+  const rows = all.filter(m => (!from || m.date >= from) && (!to || m.date <= to) && (!q || [m.no, m.product, m.party, m.reference, locLabel(m.locType, m.locId)].join(' ').toLowerCase().includes(q.toLowerCase())));
+  const todays = all.filter(m => m.date === today());
+  const open = () => setModal(E(MoveForm, { type, onClose: () => setModal(null), onSaved: async () => { setModal(null); await moveSvc.loadAll(); reload(); } }));
+  return E('div', null,
+    E('div', { className: 'ph' }, E('div', { className: 'ph-l' }, E('h1', null, isRcp ? 'Receipts' : 'Dispatch'), E('p', null, isRcp ? 'Material received into production tanks and locations' : 'Product sent out of production')),
+      E('div', { className: 'ph-r' }, E('button', { className: 'btn btn-primary', onClick: open }, E(Ic, { n: 'plus', s: 13, c: '#fff' }), isRcp ? ' New Receipt' : ' New Dispatch'))),
+    E(SetupNotice, { svcs: [moveSvc] }),
+    E('div', { className: 'grid g4', style: { marginBottom: 12 } }, E(Stat, { label: 'Today', value: todays.length, color: isRcp ? 'var(--green)' : 'var(--blue)' }), E(Stat, { label: 'Total records', value: all.length, color: 'var(--txt2)' })),
+    E('div', { className: 'sb-bar', style: { flexWrap: 'wrap', gap: 8 } },
+      E('div', { className: 'si', style: { flex: '1 1 200px' } }, E('div', { className: 'si-ico' }, E(Ic, { n: 'search', s: 13, c: 'var(--txt3)' })), E('input', { placeholder: 'Search number, product, party\u2026', value: q, onChange: e => setQ(e.target.value) })),
+      E('input', { className: 'fi', type: 'date', style: { width: 140 }, value: from, onChange: e => setFrom(e.target.value) }), E('input', { className: 'fi', type: 'date', style: { width: 140 }, value: to, onChange: e => setTo(e.target.value) }),
+      (q || from || to) ? E('button', { className: 'btn btn-outline btn-sm', onClick: () => { setQ(''); setFrom(''); setTo(''); } }, 'Clear') : null),
+    loading && !all.length ? E(LoadingBlock, { text: 'Loading\u2026' }) :
+    E('div', { className: 'tw' }, E('table', null,
+      E('thead', null, E('tr', null, ['No.', 'Date', isRcp ? 'Received into' : 'Dispatched from', 'Product', 'Quantity', isRcp ? 'Supplier' : 'Customer', 'Reference', 'By'].map(h => E('th', { key: h }, h)))),
+      E('tbody', null, rows.length === 0 ? E('tr', null, E('td', { colSpan: 8 }, E(Empty, { title: all.length ? 'No records match these filters' : (isRcp ? 'No receipts yet' : 'No dispatches yet'), text: all.length ? '' : 'Record the first one with the button above.' })))
+        : rows.map(m => E('tr', { key: m.id }, E('td', null, E('strong', { style: { fontFamily: 'var(--mono)', fontSize: 11 } }, m.no)), E('td', { style: { whiteSpace: 'nowrap' } }, fmtDate(m.date), m.time ? E('div', { style: { fontSize: 10, color: 'var(--txt3)' } }, fmtTime(m.time)) : null),
+          E('td', null, E(LocChip, { type: m.locType, id: m.locId })), E('td', null, m.product), E('td', null, E('strong', null, qtyFmt(m.qty)), ' ', m.unit), E('td', null, m.party || '-'), E('td', null, m.reference || '-'), E('td', null, m.createdBy || '-')))))));
+}
+
+function StockAdjustModal({ row, onClose, onSaved }) {
+  const { user } = useCtx(); const [qty, setQty] = useState(String(row.qty));
+  return E(ActionModal, { title: 'Adjust stock \u2014 ' + row.item.name, okLabel: 'Save adjustment', needReason: true, reasonLabel: 'Reason (e.g. physical count)', onClose, size: 'md',
+    onOk: async (reason) => { const q = Number(qty); if (!(q >= 0)) throw new Error('Enter a valid quantity'); await prodStockSvc.adjust(row.loc.id, row.item.id, q, reason, user && user.name); onSaved(); } },
+    E('div', { className: 'alert alert-amber' }, E(Ic, { n: 'alert', s: 13 }), 'Use this only to correct a count. The change is written to the stock ledger.'),
+    E('div', { className: 'frow' }, E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Location'), E('div', { style: { fontWeight: 700, paddingTop: 6 } }, row.loc.name)),
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'New quantity (' + row.item.unit + ')'), E('input', { className: 'fi', type: 'number', min: 0, step: 'any', value: qty, onChange: e => setQty(e.target.value) }))),
+    E('div', { style: { fontSize: 12, color: 'var(--txt2)' } }, 'Current: ' + qtyFmt(row.qty) + ' ' + row.item.unit));
+}
+
+function StockPage() {
+  const { user, isSA, setModal, reload } = useCtx();
+  const { loading } = useLoad([() => prodStockSvc.loadAll(), () => prodItemSvc.loadAll(), () => prodLocSvc.loadAll(), () => prodCatSvc.loadAll(), () => tankSvc.loadAll()]);
+  const [tab, setTab] = useState('locations'); const [q, setQ] = useState(''); const [locF, setLocF] = useState(''); const [led, setLed] = useState(null); const [lq, setLq] = useState('');
+  const mgr = canManageTanks(user, isSA);
+  useEffect(() => { if (tab === 'ledger') ledgerSvc.recent(300).then(setLed); }, [tab]);
+  const rows = prodStockSvc.all().filter(r => r.qty > 0).map(r => ({ item: prodItemSvc.getById(r.itemId), loc: prodLocSvc.getById(r.locId), qty: r.qty })).filter(r => r.item && r.loc)
+    .filter(r => (!locF || r.loc.id === locF) && (!q || (r.item.code + ' ' + r.item.name).toLowerCase().includes(q.toLowerCase()))).sort((a, b) => a.loc.name.localeCompare(b.loc.name) || a.item.name.localeCompare(b.item.name));
+  const tanks = tankSvc.getAll();
+  const ledRows = (led || []).filter(r => !lq || [r.type, r.refNo, r.locName, r.product, r.user].join(' ').toLowerCase().includes(lq.toLowerCase()));
+  const tabs = [['locations', 'Location stock'], ['tanks', 'Tank contents'], ['ledger', 'Stock ledger / history']];
+  return E('div', null,
+    E('div', { className: 'ph' }, E('div', { className: 'ph-l' }, E('h1', null, 'Stock & History'), E('p', null, 'Production stock only \u2014 locations, tanks and the full movement ledger'))),
+    E(SetupNotice, { svcs: [prodStockSvc] }),
+    E('div', { className: 'tabs' }, tabs.map(([id, l]) => E('div', { key: id, className: 'tab' + (tab === id ? ' on' : ''), onClick: () => setTab(id) }, l))),
+    loading && !rows.length && !tanks.length ? E(LoadingBlock) :
+    tab === 'locations' ? E('div', null,
+      E('div', { className: 'sb-bar', style: { flexWrap: 'wrap', gap: 8 } }, E('div', { className: 'si', style: { flex: '1 1 200px' } }, E('div', { className: 'si-ico' }, E(Ic, { n: 'search', s: 13, c: 'var(--txt3)' })), E('input', { placeholder: 'Search item\u2026', value: q, onChange: e => setQ(e.target.value) })),
+        E('select', { className: 'fi', style: { width: 200 }, value: locF, onChange: e => setLocF(e.target.value) }, E('option', { value: '' }, 'All locations'), prodLocSvc.getAll().map(l => E('option', { key: l.id, value: l.id }, l.name)))),
+      E('div', { className: 'tw' }, E('table', null, E('thead', null, E('tr', null, ['Location', 'Item', 'Category', 'Unit', 'Quantity', 'Capacity', '%', ''].map((h, i) => E('th', { key: i }, h)))),
+        E('tbody', null, rows.length === 0 ? E('tr', null, E('td', { colSpan: 8 }, E(Empty, { title: 'No stock in locations', text: 'Record a Receipt, or fill from a tank into a location.' })))
+          : rows.map(r => { const cap = r.item.capacity, pct = cap > 0 ? r.qty / cap * 100 : null; return E('tr', { key: r.loc.id + r.item.id }, E('td', null, E('strong', null, r.loc.name)), E('td', null, r.item.code + ' \u2014 ' + r.item.name),
+            E('td', null, (prodCatSvc.getById(r.item.categoryId) || {}).name || '-'), E('td', null, r.item.unit), E('td', null, E('strong', null, qtyFmt(r.qty))), E('td', null, cap > 0 ? qtyFmt(cap) : '\u2014'),
+            E('td', { style: { minWidth: 110 } }, pct == null ? '\u2014' : E('div', { style: { display: 'flex', gap: 6, alignItems: 'center' } }, E('div', { style: { flex: 1 } }, E(PBar, { pct, color: pct >= 60 ? '#16a34a' : pct >= 35 ? '#2563eb' : '#f59e0b', h: 6 })), E('b', { style: { fontSize: 11 } }, pct.toFixed(1) + '%'))),
+            E('td', null, mgr ? E('button', { className: 'btn btn-outline btn-xs', onClick: () => setModal(E(StockAdjustModal, { row: r, onClose: () => setModal(null), onSaved: async () => { setModal(null); reload(); } })) }, 'Adjust') : null)); })))))
+    : tab === 'tanks' ? E('div', { className: 'tw' }, E('table', null, E('thead', null, E('tr', null, ['Tank', 'Product', 'Quantity', 'Capacity', 'Level', 'Status'].map(h => E('th', { key: h }, h)))),
+        E('tbody', null, tanks.length === 0 ? E('tr', null, E('td', { colSpan: 6 }, E(Empty, { title: 'No tanks yet' }))) : tanks.map(t => E('tr', { key: t.id }, E('td', null, E('strong', null, t.name)), E('td', null, t.product || '\u2014'), E('td', null, E('strong', null, qtyFmt(t.qty)), ' ', t.unit),
+          E('td', null, t.capacity ? qtyFmt(t.capacity) : '\u2014'), E('td', { style: { minWidth: 120 } }, t.capacity ? E(Gauge, { qty: t.qty, cap: t.capacity }) : '\u2014'), E('td', null, E(StatusBadge, { s: t.status })))))))
+    : E('div', null,
+        E('div', { className: 'sb-bar' }, E('div', { className: 'si', style: { flex: '1 1 200px' } }, E('div', { className: 'si-ico' }, E(Ic, { n: 'search', s: 13, c: 'var(--txt3)' })), E('input', { placeholder: 'Search type, reference, location, product\u2026', value: lq, onChange: e => setLq(e.target.value) }))),
+        led === null ? E(LoadingBlock, { text: 'Loading ledger\u2026' }) : E(LedgerTable, { rows: ledRows })));
+}
+
+// ── masters ──
+function MasterForm({ kind, initial, onClose, onSaved }) {
+  const { toast } = useCtx();
+  const cats = prodCatSvc.getAll();
+  const [f, setF] = useState(initial ? { ...initial } : { code: '', id: '', name: '', categoryId: '', unit: 'MT', capacity: '', minStock: '', description: '', status: 'Active', color: '#2563eb', isFinal: false });
+  const [err, setErr] = useState(''); const [busy, setBusy] = useState(false); const lock = useRef(false);
+  const set = (k, v) => setF(p => ({ ...p, [k]: v }));
+  const save = async () => {
+    if (lock.current) return;
+    if (!String(f.name || '').trim()) { setErr('Name is required'); return; }
+    if (kind === 'category' ? !String(f.id || '').trim() : !String(f.code || '').trim()) { setErr('Code is required'); return; }
+    lock.current = true; setBusy(true); setErr('');
+    try {
+      if (kind === 'item') initial ? await prodItemSvc.update(initial.id, f) : await prodItemSvc.create(f);
+      else if (kind === 'location') initial ? await prodLocSvc.update(initial.id, f) : await prodLocSvc.create(f);
+      else initial ? await prodCatSvc.update(initial.id, f) : await prodCatSvc.create({ ...f, id: String(f.id).trim().toUpperCase() });
+      toast('Saved', 'success'); onSaved();
+    } catch (e) { setErr(e.message); lock.current = false; setBusy(false); }
+  };
+  const title = (initial ? 'Edit ' : 'New ') + (kind === 'item' ? 'product' : kind === 'location' ? 'location' : 'category');
+  return E(Modal, { title, onClose, size: 'md', footer: E(React.Fragment, null, E('button', { className: 'btn btn-outline', onClick: onClose, disabled: busy }, 'Cancel'), E('button', { className: 'btn btn-primary', onClick: save, disabled: busy }, busy ? 'Saving\u2026' : 'Save')) },
+    E('div', { className: 'frow' }, E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Code *'), E('input', { className: 'fi', value: kind === 'category' ? f.id : f.code, disabled: !!initial && kind === 'category', onChange: e => set(kind === 'category' ? 'id' : 'code', e.target.value.toUpperCase().replace(/\s/g, '')) })),
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Name *'), E('input', { className: 'fi', value: f.name, onChange: e => set('name', e.target.value) }))),
+    kind === 'item' ? E('div', null,
+      E('div', { className: 'frow3' }, E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Category'), E('select', { className: 'fi', value: f.categoryId || '', onChange: e => set('categoryId', e.target.value) }, E('option', { value: '' }, '\u2014 none \u2014'), cats.map(c => E('option', { key: c.id, value: c.id }, c.name)))),
+        E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Unit'), E('select', { className: 'fi', value: f.unit, onChange: e => set('unit', e.target.value) }, [...new Set([...TANK_UNITS, f.unit])].map(u => E('option', { key: u }, u)))),
+        E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Status'), E('select', { className: 'fi', value: f.status, onChange: e => set('status', e.target.value) }, E('option', null, 'Active'), E('option', null, 'Inactive')))),
+      E('div', { className: 'frow' }, E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Capacity (for the % bar)'), E('input', { className: 'fi', type: 'number', min: 0, step: 'any', value: f.capacity, onChange: e => set('capacity', e.target.value) })),
+        E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Minimum stock'), E('input', { className: 'fi', type: 'number', min: 0, step: 'any', value: f.minStock, onChange: e => set('minStock', e.target.value) }))),
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Description'), E('textarea', { className: 'fi', rows: 2, value: f.description, onChange: e => set('description', e.target.value) }))) : null,
+    kind === 'location' ? E('div', null, E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Description'), E('input', { className: 'fi', value: f.description, onChange: e => set('description', e.target.value) })),
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Status'), E('select', { className: 'fi', value: f.status, onChange: e => set('status', e.target.value) }, E('option', null, 'Active'), E('option', null, 'Inactive')))) : null,
+    kind === 'category' ? E('div', { className: 'frow' }, E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Colour'), E('input', { className: 'fi', type: 'color', value: f.color, onChange: e => set('color', e.target.value), style: { height: 38, padding: 2 } })),
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Counts as final product'), E('select', { className: 'fi', value: f.isFinal ? 'yes' : 'no', onChange: e => set('isFinal', e.target.value === 'yes') }, E('option', { value: 'no' }, 'No'), E('option', { value: 'yes' }, 'Yes \u2014 shown in Final Products')))) : null,
+    err ? E('div', { className: 'alert alert-red', style: { marginBottom: 0 } }, E(Ic, { n: 'alert', s: 13 }), err) : null);
+}
+
+function MastersPage() {
+  const { user, isSA, setModal, toast, reload } = useCtx();
+  const { loading } = useLoad([() => prodItemSvc.loadAll(), () => prodCatSvc.loadAll(), () => prodLocSvc.loadAll()]);
+  const [tab, setTab] = useState('items'); const [q, setQ] = useState('');
+  const mgr = canManageTanks(user, isSA);
+  const done = async () => { setModal(null); await Promise.all([prodItemSvc.loadAll(), prodCatSvc.loadAll(), prodLocSvc.loadAll()]); reload(); };
+  const open = (kind, initial) => setModal(E(MasterForm, { kind, initial, onClose: () => setModal(null), onSaved: done }));
+  const del = (svc, rec, label) => setModal(E(ActionModal, { title: 'Delete ' + label, okLabel: 'Delete', okClass: 'btn-danger', onClose: () => setModal(null), onOk: async () => { await svc.remove(rec.id); toast('Deleted', 'success'); await done(); } }, 'Delete "' + (rec.name) + '"? If it is already used in stock or history it cannot be deleted \u2014 set it to Inactive instead.'));
+  const items = prodItemSvc.getAll().filter(i => !q || (i.code + ' ' + i.name).toLowerCase().includes(q.toLowerCase()));
+  const act = (svc, rec, kind, label) => mgr ? E('div', { style: { display: 'flex', gap: 4 } }, E('button', { className: 'btn btn-outline btn-xs', onClick: () => open(kind, rec) }, 'Edit'), E('button', { className: 'btn btn-danger btn-xs', onClick: () => del(svc, rec, label) }, '\u2715')) : null;
+  const tabs = [['items', 'Products'], ['categories', 'Categories'], ['locations', 'Locations']];
+  const addLbl = { items: 'New Product', categories: 'New Category', locations: 'New Location' }[tab];
+  return E('div', null,
+    E('div', { className: 'ph' }, E('div', { className: 'ph-l' }, E('h1', null, 'Production Masters'), E('p', null, 'Products, categories and locations used only by the Production app')),
+      E('div', { className: 'ph-r' }, mgr ? E('button', { className: 'btn btn-primary', onClick: () => open(tab === 'items' ? 'item' : tab === 'categories' ? 'category' : 'location') }, E(Ic, { n: 'plus', s: 13, c: '#fff' }), ' ' + addLbl) : null)),
+    E(SetupNotice, { svcs: [prodItemSvc] }),
+    E('div', { className: 'tabs' }, tabs.map(([id, l]) => E('div', { key: id, className: 'tab' + (tab === id ? ' on' : ''), onClick: () => setTab(id) }, l))),
+    loading && !prodItemSvc.getAll().length ? E(LoadingBlock) :
+    tab === 'items' ? E('div', null, E('div', { className: 'sb-bar' }, E('div', { className: 'si', style: { flex: '1 1 200px' } }, E('div', { className: 'si-ico' }, E(Ic, { n: 'search', s: 13, c: 'var(--txt3)' })), E('input', { placeholder: 'Search products\u2026', value: q, onChange: e => setQ(e.target.value) }))),
+      E('div', { className: 'tw' }, E('table', null, E('thead', null, E('tr', null, ['Code', 'Name', 'Category', 'Unit', 'Capacity', 'Min stock', 'Status', ''].map((h, i) => E('th', { key: i }, h)))),
+        E('tbody', null, items.length === 0 ? E('tr', null, E('td', { colSpan: 8 }, E(Empty, { title: 'No products yet', text: mgr ? 'Add the materials and products your plant works with.' : 'Ask a manager to add products.' })))
+          : items.map(i => E('tr', { key: i.id }, E('td', null, E('strong', { style: { fontFamily: 'var(--mono)', fontSize: 11 } }, i.code)), E('td', null, i.name), E('td', null, (prodCatSvc.getById(i.categoryId) || {}).name || '-'), E('td', null, i.unit), E('td', null, i.capacity ? qtyFmt(i.capacity) : '\u2014'), E('td', null, i.minStock ? qtyFmt(i.minStock) : '\u2014'), E('td', null, E(StatusBadge, { s: i.status })), E('td', null, act(prodItemSvc, i, 'item', 'product'))))))))
+    : tab === 'categories' ? E('div', { className: 'tw' }, E('table', null, E('thead', null, E('tr', null, ['Code', 'Name', 'Final product', ''].map((h, i) => E('th', { key: i }, h)))),
+        E('tbody', null, prodCatSvc.getAll().map(c => E('tr', { key: c.id }, E('td', null, E('span', { style: { display: 'inline-block', width: 10, height: 10, borderRadius: 3, background: c.color, marginRight: 6 } }), E('strong', { style: { fontFamily: 'var(--mono)', fontSize: 11 } }, c.id)), E('td', null, c.name), E('td', null, c.isFinal ? E(Badge, { c: 'green' }, 'Final product') : '\u2014'), E('td', null, act(prodCatSvc, c, 'category', 'category')))))))
+    : E('div', { className: 'tw' }, E('table', null, E('thead', null, E('tr', null, ['Code', 'Name', 'Description', 'Status', ''].map((h, i) => E('th', { key: i }, h)))),
+        E('tbody', null, prodLocSvc.getAll().length === 0 ? E('tr', null, E('td', { colSpan: 5 }, E(Empty, { title: 'No locations yet', text: 'Locations are production units or yards that hold stock outside tanks (e.g. NSF Unit, Packing Area).' })))
+          : prodLocSvc.getAll().map(l => E('tr', { key: l.id }, E('td', null, E('strong', { style: { fontFamily: 'var(--mono)', fontSize: 11 } }, l.code)), E('td', null, l.name), E('td', null, l.description || '-'), E('td', null, E(StatusBadge, { s: l.status })), E('td', null, act(prodLocSvc, l, 'location', 'location'))))))));
+}
+
+// ── users (Production's own accounts) ──
+const PROD_PAGES = [
+  { id: 'dashboard', label: 'Dashboard', group: 'Overview' }, { id: 'tanks', label: 'Tanks', group: 'Operations' }, { id: 'runs', label: 'Production', group: 'Operations' }, { id: 'fill', label: 'Fill', group: 'Operations' },
+  { id: 'receipts', label: 'Receipts', group: 'Stock' }, { id: 'dispatch', label: 'Dispatch', group: 'Stock' }, { id: 'stock', label: 'Stock & History', group: 'Stock' },
+  { id: 'masters', label: 'Masters', group: 'Setup' }, { id: 'approvals', label: 'Approvals', group: 'Control' },
+  { id: 'reports', label: 'Production Reports', group: 'Reports' }, { id: 'fillreports', label: 'Fill Reports', group: 'Reports' },
+];
+function ProdUserForm({ initial, onClose, onSaved }) {
+  const { toast, user: me } = useCtx();
+  const [f, setF] = useState(initial ? { ...initial, password: '' } : { username: '', name: '', password: '', role: 'Operator', status: 'Active', canApprove: false, pages: 'dashboard,tanks,runs,fill,stock' });
+  const [err, setErr] = useState(''); const [busy, setBusy] = useState(false); const lock = useRef(false);
+  const set = (k, v) => setF(p => ({ ...p, [k]: v }));
+  const pages = f.pages === 'all' ? PROD_PAGES.map(p => p.id) : String(f.pages || '').split(',').map(s => s.trim()).filter(Boolean);
+  const toggle = id => set('pages', (pages.includes(id) ? pages.filter(x => x !== id) : [...pages, id]).join(','));
+  const save = async () => {
+    if (lock.current) return;
+    if (!f.username.trim() || !f.name.trim()) { setErr('Username and name are required'); return; }
+    if (!initial && (f.password || '').length < 4) { setErr('Password must be at least 4 characters'); return; }
+    lock.current = true; setBusy(true); setErr('');
+    try { await prodUserSvc.save({ ...f, pages: f.role === 'Super Admin' ? 'all' : (pages.join(',') || 'dashboard') }); toast('User saved', 'success'); onSaved(); } catch (e) { setErr(e.message); lock.current = false; setBusy(false); }
+  };
+  const self = initial && me && initial.id === me.id;
+  return E(Modal, { title: initial ? 'Edit user \u2014 ' + initial.username : 'New Production user', onClose, size: 'lg', footer: E(React.Fragment, null, E('button', { className: 'btn btn-outline', onClick: onClose, disabled: busy }, 'Cancel'), E('button', { className: 'btn btn-primary', onClick: save, disabled: busy }, busy ? 'Saving\u2026' : 'Save user')) },
+    E('div', { className: 'alert alert-blue' }, E(Ic, { n: 'info', s: 13 }), 'These accounts work only in the Production app. Store users are managed separately in the Store app.'),
+    E('div', { className: 'frow' }, E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Username *'), E('input', { className: 'fi', value: f.username, onChange: e => set('username', e.target.value) })),
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Full name *'), E('input', { className: 'fi', value: f.name, onChange: e => set('name', e.target.value) }))),
+    E('div', { className: 'frow3' }, E('div', { className: 'fg' }, E('label', { className: 'flbl' }, initial ? 'New password (leave blank to keep)' : 'Password *'), E('input', { className: 'fi', type: 'password', value: f.password, onChange: e => set('password', e.target.value) })),
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Role'), E('select', { className: 'fi', value: f.role, disabled: self, onChange: e => set('role', e.target.value) }, ['Super Admin', 'Manager', 'Operator'].map(r => E('option', { key: r }, r)))),
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Status'), E('select', { className: 'fi', value: f.status, disabled: self, onChange: e => set('status', e.target.value) }, E('option', null, 'Active'), E('option', null, 'Inactive')))),
+    E('label', { style: { fontSize: 12, display: 'flex', gap: 6, alignItems: 'center', marginBottom: 10 } }, E('input', { type: 'checkbox', checked: !!f.canApprove, onChange: e => set('canApprove', e.target.checked) }), 'Can approve and complete fills'),
+    f.role === 'Super Admin' ? E('div', { style: { fontSize: 12, color: 'var(--txt3)' } }, 'Super Admin sees every Production page.') :
+      E('div', null, E('div', { className: 'flbl', style: { marginBottom: 6 } }, 'Pages this user can open'), E('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(170px,1fr))', gap: 6 } },
+        PROD_PAGES.map(p => E('label', { key: p.id, style: { fontSize: 12, display: 'flex', gap: 6, alignItems: 'center', border: '1px solid var(--border)', borderRadius: 8, padding: '6px 8px' } }, E('input', { type: 'checkbox', checked: pages.includes(p.id) || p.id === 'dashboard', disabled: p.id === 'dashboard', onChange: () => toggle(p.id) }), p.label)))),
+    err ? E('div', { className: 'alert alert-red', style: { marginTop: 10, marginBottom: 0 } }, E(Ic, { n: 'alert', s: 13 }), err) : null);
+}
+function ProdUsersPage() {
+  const { setModal, user: me } = useCtx();
+  const { loading } = useLoad([() => prodUserSvc.loadAll()]);
+  const users = prodUserSvc.getAll();
+  const open = u => setModal(E(ProdUserForm, { initial: u, onClose: () => setModal(null), onSaved: () => setModal(null) }));
+  return E('div', null,
+    E('div', { className: 'ph' }, E('div', { className: 'ph-l' }, E('h1', null, 'Production Users'), E('p', null, 'Accounts for the Production app only')),
+      E('div', { className: 'ph-r' }, E('button', { className: 'btn btn-primary', onClick: () => open(null) }, E(Ic, { n: 'plus', s: 13, c: '#fff' }), ' New User'))),
+    E(SetupNotice, { svcs: [prodUserSvc] }),
+    loading && !users.length ? E(LoadingBlock) : E('div', { className: 'tw' }, E('table', null, E('thead', null, E('tr', null, ['Username', 'Name', 'Role', 'Approves fills', 'Pages', 'Status', ''].map((h, i) => E('th', { key: i }, h)))),
+      E('tbody', null, users.map(u => E('tr', { key: u.id }, E('td', null, E('strong', { style: { fontFamily: 'var(--mono)', fontSize: 11 } }, u.username), me && u.id === me.id ? E('span', { className: 'ops-tag' }, 'YOU') : null), E('td', null, u.name), E('td', null, E(Badge, { c: u.role === 'Super Admin' ? 'red' : u.role === 'Manager' ? 'blue' : 'gray' }, u.role)),
+        E('td', null, u.canApprove || u.role === 'Super Admin' ? 'Yes' : '\u2014'), E('td', { style: { fontSize: 11, maxWidth: 260 } }, u.pages === 'all' ? 'All pages' : u.pages.split(',').length + ' pages'), E('td', null, E(StatusBadge, { s: u.status })),
+        E('td', null, E('button', { className: 'btn btn-outline btn-xs', onClick: () => open(u) }, 'Edit'))))))));
+}
+
+
+// ════════════════════════════════════════
+//  APP SELECTION · HASH ROUTING · PRODUCTION APP SHELL
+// ════════════════════════════════════════
+const parseAppHash = () => { const m = String(window.location.hash || '').match(/^#\/(store|production)(?:\/([\w-]+))?/); return m ? { app: m[1], page: m[2] || 'dashboard' } : null; };
+const writeAppHash = (app, page) => { try { const h = '#/' + app + (page && page !== 'dashboard' ? '/' + page : ''); if (window.location.hash !== h) window.location.hash = h; } catch {} };
+
+function AppSelect({ onSelect }) {
+  const card = (key, title, sub, icon, color, items) => E('button', { type: 'button', className: 'appsel-card', 'data-app': key, onClick: () => onSelect(key), style: { '--ac': color } },
+    E('div', { className: 'appsel-ico' }, E(Ic, { n: icon, s: 30, c: '#fff' })), E('div', { className: 'appsel-t' }, title), E('div', { className: 'appsel-s' }, sub),
+    E('ul', { className: 'appsel-l' }, items.map(i => E('li', { key: i }, i))), E('div', { className: 'appsel-go' }, 'Open ' + title + ' \u2192'));
+  return E('div', { className: 'appsel' },
+    E('div', { className: 'appsel-in' },
+      E('img', { src: APP_LOGO, alt: 'SOLOPOS', style: { width: 72, height: 72, borderRadius: 16, boxShadow: '0 6px 24px rgba(0,0,0,.35)' } }),
+      E('h1', null, 'SOLOPOS'), E('p', { className: 'appsel-h' }, 'Select Application'),
+      E('div', { className: 'appsel-grid' },
+        card('store', 'STORE', 'Store Inventory & Management', 'warehouse', '#2563eb', ['Items, categories, racks, suppliers', 'GRN, GIN, transfers, requests', 'Approvals, stock and store reports']),
+        card('production', 'PRODUCTION', 'Production & Tank Management', 'tank', '#16a34a', ['Tanks, production runs and fills', 'Receipts, dispatch, production stock', 'Production dashboard and reports'])),
+      E('div', { className: 'appsel-note' }, 'The two applications are completely separate: each has its own users, data and reports.')));
+}
+
+function ProdPasswordModal({ onClose }) {
+  const { user, toast } = useCtx(); const [o, setO] = useState(''); const [n, setN] = useState(''); const [n2, setN2] = useState('');
+  return E(ActionModal, { title: 'Change password', okLabel: 'Change password', onClose, size: 'sm',
+    onOk: async () => { if (n !== n2) throw new Error('The new passwords do not match'); await rpcCall('prod_change_password', { p_user: user.id, p_old: o, p_new: n }); toast('Password changed', 'success'); } },
+    E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Current password'), E('input', { className: 'fi', type: 'password', value: o, onChange: e => setO(e.target.value) })),
+    E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'New password'), E('input', { className: 'fi', type: 'password', value: n, onChange: e => setN(e.target.value) })),
+    E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Repeat new password'), E('input', { className: 'fi', type: 'password', value: n2, onChange: e => setN2(e.target.value) })));
+}
+
+const PROD_BRAND = { name: 'SOLOPOS Production', sub: 'Production & Tank Management', features: [['\ud83d\udee2\ufe0f', 'Tanks with live contents and capacity'], ['\ud83c\udfed', 'Production runs with the actual run time you enter'], ['\ud83d\udd04', 'Fills between tanks and production locations'], ['\ud83d\udce6', 'Receipts, dispatch and production stock'], ['\ud83d\udcca', 'Production dashboard and reports']] };
+
+function ProdProvider({ children, onSwitchApp }) {
+  const [user, setUser] = useState(() => prodUserSvc.session());
+  const [page, setPage] = useState(() => { const h = parseAppHash(); return h && h.app === 'production' ? h.page : 'dashboard'; });
+  const [toasts, setToasts] = useState([]); const [modal, setModal] = useState(null); const [sideOpen, setSideOpen] = useState(false); const [tick, setTick] = useState(0);
+  const loadAllData = useCallback(async () => {
+    await Promise.all([prodCatSvc.loadAll(), prodItemSvc.loadAll(), prodLocSvc.loadAll(), prodUserSvc.loadAll(), prodStockSvc.loadAll(), tankSvc.loadAll(), fillSvc.loadAll(), tprodSvc.loadAll()].map(p => p.catch(() => {})));
+    setTick(t => t + 1);
+  }, []);
+  useEffect(() => { if (user) loadAllData(); }, [!!user]);
+  useEffect(() => { const dim = document.getElementById('dim'); if (!dim) return; if (sideOpen) { dim.classList.add('show'); dim.onclick = () => setSideOpen(false); } else { dim.classList.remove('show'); dim.onclick = null; } }, [sideOpen]);
+  useEffect(() => { const h = () => { const x = parseAppHash(); if (x && x.app === 'production') setPage(x.page); }; window.addEventListener('hashchange', h); return () => window.removeEventListener('hashchange', h); }, []);
+  const toast = useCallback((msg, type = 'info') => { const id = uid(); setToasts(t => [...t, { id, msg, type }]); setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 3000); }, []);
+  const nav = useCallback(p => { setPage(p); setSideOpen(false); writeAppHash('production', p); }, []);
+  const reload = useCallback(async () => { await loadAllData(); }, [loadAllData]);
+  const login = useCallback(async (un, pw) => { const u = await prodUserSvc.login(un, pw); if (u) { setUser(u); return true; } return false; }, []);
+  const logout = useCallback(() => { prodUserSvc.logout(); setUser(null); }, []);
+  const switchApp = useCallback(() => { prodUserSvc.logout(); setUser(null); onSwitchApp && onSwitchApp(); }, [onSwitchApp]);
+  const isSA = !!user && user.role === 'Super Admin';
+  return E(Ctx.Provider, { value: { user, setUser, page, nav, toasts, toast, modal, setModal, login, logout, switchApp, sideOpen, setSideOpen, reload, tick, whId: null, isSA, drilldown: null, setDrilldown() {}, app: 'production', appLabel: 'PRODUCTION', brand: PROD_BRAND } }, children);
+}
+
+function ProdSidebar() {
+  const { user, page, nav, logout, switchApp, sideOpen, isSA, setModal } = useCtx();
+  const pending = canApproveOps(user, isSA) ? fillSvc.getAll().filter(f => f.status === 'Pending').length : 0;
+  const nav_ = [
+    { id: 'dashboard', icon: 'dashboard', label: 'Dashboard' },
+    { type: 'section', label: 'Operations' },
+    { id: 'tanks', icon: 'tank', label: 'Tanks' }, { id: 'runs', icon: 'factory', label: 'Production' }, { id: 'fill', icon: 'fill', label: 'Fill' },
+    { type: 'section', label: 'Stock' },
+    { id: 'receipts', icon: 'grv', label: 'Receipts' }, { id: 'dispatch', icon: 'giv', label: 'Dispatch' }, { id: 'stock', icon: 'stock', label: 'Stock & History' },
+    { type: 'section', label: 'Control' },
+    { id: 'approvals', icon: 'check', label: 'Approvals', dot: pending },
+    { type: 'section', label: 'Reports & Setup' },
+    { id: 'reports', icon: 'reports', label: 'Production Reports' }, { id: 'fillreports', icon: 'reports', label: 'Fill Reports' },
+    { id: 'masters', icon: 'category', label: 'Masters' },
+    isSA && { id: 'users', icon: 'users', label: 'Users' },
+  ].filter(Boolean);
+  const canSeeNav = id => { if (isSA) return true; const up = (user && user.pages) || ''; return up === 'all' || up.split(',').map(p => p.trim()).includes(id); };
+  const vis = nav_.filter(i => !i.id || i.id === 'dashboard' || canSeeNav(i.id));
+  return E('div', { className: 'sidebar' + (sideOpen ? ' open' : '') },
+    E('div', { className: 'sidebar-brand' }, E('img', { className: 'brand-icon', src: APP_LOGO, alt: 'SOLOPOS', style: { background: 'transparent', objectFit: 'cover' } }),
+      E('div', null, E('div', { className: 'brand-name' }, 'SOLOPOS'), E('div', { className: 'brand-sub' }, 'Production App'))),
+    E('div', { style: { margin: '8px 10px 4px', background: 'rgba(22,163,74,.18)', border: '1px solid rgba(22,163,74,.4)', borderRadius: 8, padding: '7px 10px' } },
+      E('div', { style: { fontSize: 9, color: 'rgba(255,255,255,.45)', textTransform: 'uppercase', letterSpacing: '.6px', marginBottom: 3 } }, 'Application'),
+      E('div', { style: { fontSize: 12, fontWeight: 700, color: '#86efac' } }, 'Production & Tank Management')),
+    E('nav', { className: 'nav' }, vis.map((item, i) => item.type === 'section' ? E('div', { key: i, className: 'nav-sec-lbl' }, item.label)
+      : E('div', { key: item.id, className: 'nav-item' + (page === item.id ? ' on' : ''), onClick: () => nav(item.id) }, E(Ic, { n: item.icon, s: 15 }), E('span', null, item.label), item.dot > 0 ? E('span', { className: 'nav-badge' }, item.dot) : null))),
+    E('div', { className: 'sidebar-foot' }, E('div', { className: 's-user' }, E('div', { className: 's-avatar' }, (user && user.name && user.name[0]) || 'U'),
+      E('div', { style: { flex: 1, minWidth: 0 } }, E('div', { className: 's-name' }, user && user.name), E('div', { className: 's-role' }, user && user.role)),
+      E('div', { style: { display: 'flex', gap: 4 } },
+        E('div', { className: 's-logout', title: 'Change password', style: { color: 'rgba(255,255,255,.4)' }, onClick: () => setModal(E(ProdPasswordModal, { onClose: () => setModal(null) })) }, E(Ic, { n: 'key', s: 15 })),
+        E('div', { className: 's-logout', title: 'Switch application', onClick: switchApp }, E(Ic, { n: 'transfer', s: 15 })),
+        E('div', { className: 's-logout', title: 'Logout', onClick: logout }, E(Ic, { n: 'logout', s: 15 }))))));
+}
+
+function ProdApp() {
+  const { user, page, nav, modal, sideOpen, setSideOpen, isSA } = useCtx();
+  if (!user) return E(Auth);
+  const canSee = id => { if (isSA) return true; const up = user.pages || ''; return up === 'all' || up.split(',').map(p => p.trim()).includes(id); };
+  const routes = {
+    dashboard: () => E(OpsDashboard), tanks: () => E(TanksPage), runs: () => E(TankProductionPage), fill: () => E(FillPage), receipts: () => E(MovesPage, { type: 'RECEIPT', key: 'rcp' }),
+    dispatch: () => E(MovesPage, { type: 'DISPATCH', key: 'dsp' }), stock: () => E(StockPage), masters: () => E(MastersPage), approvals: () => E(FillPage, { mode: 'approvals', key: 'appr' }),
+    reports: () => E(ProductionReportsPage), fillreports: () => E(FillReportsPage), users: () => (isSA ? E(ProdUsersPage) : null),
+  };
+  const labels = { dashboard: 'Dashboard', tanks: 'Tanks', runs: 'Production', fill: 'Fill', receipts: 'Receipts', dispatch: 'Dispatch', stock: 'Stock & History', masters: 'Masters', approvals: 'Approvals', reports: 'Production Reports', fillreports: 'Fill Reports', users: 'Users' };
+  const allowed = routes[page] && (page === 'dashboard' || canSee(page));
+  const pending = canApproveOps(user, isSA) ? fillSvc.getAll().filter(f => f.status === 'Pending').length : 0;
+  return E('div', { className: 'app', 'data-app': 'production' },
+    E(ProdSidebar),
+    E('div', { className: 'main' },
+      E('div', { className: 'topbar' },
+        E('div', { className: 'mob-btn', onClick: () => setSideOpen(!sideOpen) }, E(Ic, { n: 'menu', s: 16 })),
+        E('div', { className: 'breadcrumb' }, E('span', { className: 'app-pill app-pill-prod' }, 'PRODUCTION APP'), E('span', null, ' SOLOPOS \u203a '), E('strong', null, labels[page] || page)),
+        E('div', { className: 'topbar-right' },
+          pending > 0 ? E('div', { style: { background: 'var(--amber-light)', border: '1px solid var(--amber-mid)', color: 'var(--amber)', borderRadius: 6, padding: '4px 10px', fontSize: 11, fontWeight: 600, cursor: 'pointer' }, onClick: () => nav('approvals') }, '\u23f3 ' + pending + ' pending') : null,
+          E('div', { className: 'user-chip' }, E('div', { className: 'user-chip-av' }, (user.name && user.name[0]) || 'U'), E('div', null, E('div', { className: 'user-chip-name' }, user.name), E('div', { style: { fontSize: 10, color: 'var(--txt3)' } }, user.role))))),
+      E('div', { className: 'page' }, allowed ? routes[page]()
+        : routes[page] ? E('div', { style: { padding: '80px 0', textAlign: 'center' } }, E('div', { style: { fontSize: 52, marginBottom: 12 } }, '\ud83d\udd12'), E('h2', null, 'Access restricted'), E('p', { style: { color: 'var(--txt2)' } }, 'Your Production account does not have access to this page.'))
+        : E('div', { style: { padding: 40, textAlign: 'center', color: 'var(--txt2)' } }, 'Page not found'))),
+    modal, E(Toasts));
+}
+
+function Root() {
+  const [app, setApp] = useState(() => {
+    const h = parseAppHash(); if (h) return h.app;
+    let last = null; try { last = localStorage.getItem('gs_last_app'); } catch {}
+    if (last === 'store' && userSvc.session()) return 'store';
+    if (last === 'production' && prodUserSvc.session()) return 'production';
+    return null;
+  });
+  const choose = a => { try { localStorage.setItem('gs_last_app', a); } catch {} try { window.location.hash = '#/' + a; } catch {} setApp(a); };
+  const back = () => { try { localStorage.removeItem('gs_last_app'); } catch {} try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch {} setApp(null); };
+  useEffect(() => { const h = () => { const x = parseAppHash(); if (x && x.app !== app) { try { localStorage.setItem('gs_last_app', x.app); } catch {} setApp(x.app); } }; window.addEventListener('hashchange', h); return () => window.removeEventListener('hashchange', h); }, [app]);
+  if (!app) return E(AppSelect, { onSelect: choose });
+  if (app === 'production') return E(ProdProvider, { onSwitchApp: back }, E(ProdApp));
+  return E(Provider, { onSwitchApp: back }, E(App));
 }
 
 
@@ -10049,7 +10353,7 @@ function App(){
     return userPages.split(',').map(p=>p.trim()).includes(pgId);
   };
   const pages={
-    dashboard:React.createElement(DashboardSwitch),
+    dashboard:React.createElement(Dashboard),
     warehouses:isSA?React.createElement(Warehouses):null,
     categories:canSee('categories')?React.createElement(Categories):null,
     items:canSee('items')?React.createElement(Items):null,
@@ -10058,11 +10362,6 @@ function App(){
     grn:canSee('grn')?React.createElement(GRVEntry):null,
     gin:canSee('gin')?React.createElement(GIVEntry):null,
     transfer:canSee('transfer')?React.createElement(StockTransfer):null,
-    fill:canSee('fill')?React.createElement(FillPage):null,
-    tanks:canSee('tanks')?React.createElement(TanksPage):null,
-    tankproduction:canSee('tankproduction')?React.createElement(TankProductionPage):null,
-    productionreports:canSee('productionreports')?React.createElement(ProductionReportsPage):null,
-    fillreports:canSee('fillreports')?React.createElement(FillReportsPage):null,
     consumption:canSee('consumption')?React.createElement(Consumption):null,
     production:canSee('production')?React.createElement(Production):null,
     materialrequest:canSee('materialrequest')?React.createElement(MaterialRequest):null,
@@ -10084,11 +10383,6 @@ function App(){
     grn:['Transaction','Purchase Entry'],
     gin:['Transaction','GIN Entry'],
     transfer:['Transaction','Stock Transfer'],
-    fill:['Transaction','Fill'],
-    tanks:['Tanks & Production','Tanks'],
-    tankproduction:['Tanks & Production','Tank Production'],
-    productionreports:['Reports','Production Reports'],
-    fillreports:['Reports','Fill Reports'],
     consumption:['Transaction','Consumption'],
     production:['Transaction','Production'],
     materialrequest:['Transaction','Material Request'],
@@ -10111,7 +10405,8 @@ function App(){
       React.createElement('div',{className:'topbar'},
         React.createElement('div',{className:'mob-btn',onClick:()=>setSideOpen(!sideOpen)},React.createElement(Ic,{n:'menu',s:16})),
         React.createElement('div',{className:'breadcrumb'},
-          React.createElement('span',null,sett.companyName||'General Store'),
+          React.createElement('span',{className:'app-pill app-pill-store'},'STORE APP'),
+          React.createElement('span',null,' '+(sett.companyName||'General Store')),
           bc.map((b,i)=>React.createElement(React.Fragment,{key:i},
             React.createElement('span',null,' › '),
             i===bc.length-1?React.createElement('strong',null,b):React.createElement('span',null,b)
@@ -10148,10 +10443,10 @@ function AppWrapper(){
   return React.createElement(Provider,null,React.createElement(App));
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(AppWrapper));
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Root));
 
 // PWA manifest
-const mf={name:'General Store IMS',short_name:'GS-IMS',start_url:'/',display:'standalone',background_color:'#f4f6fb',theme_color:'#1a2744',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231a2744'/%3E%3Ctext y='.9em' font-size='70' x='10'%3E🏪%3C/text%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml'}]};
+const mf={name:'SOLOPOS',short_name:'SOLOPOS',start_url:'/',display:'standalone',background_color:'#f4f6fb',theme_color:'#1a2744',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231a2744'/%3E%3Ctext y='.9em' font-size='70' x='10'%3E🏪%3C/text%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml'}]};
 const mblob=new Blob([JSON.stringify(mf)],{type:'application/json'});
 const ml=document.createElement('link');ml.rel='manifest';ml.href=URL.createObjectURL(mblob);
 document.head.appendChild(ml);
