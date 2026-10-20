@@ -7648,7 +7648,7 @@ function FillForm({ onDone, onCancel }) {
   const parse = v => { const a = String(v || '').split(':'); return { type: a[0], id: a[1] }; };
   const S = parse(f.src), D = parse(f.dst);
   const srcTank = S.type === 'tank' ? tankSvc.getById(S.id) : null, dstTank = D.type === 'tank' ? tankSvc.getById(D.id) : null;
-  const srcItems = S.type === 'location' ? prodStockSvc.itemsAt(S.id) : [];
+  const srcItems = S.type === 'location' ? catalogSvc.get() : [];
   const item = S.type === 'location' ? srcItems.find(i => i.id === f.itemId) : (srcTank && srcTank.itemId ? { id: srcTank.itemId, name: srcTank.product, unit: srcTank.unit } : null);
   const avail = !item ? 0 : S.type === 'location' ? prodStockSvc.getQty(item.id, S.id) : srcTank.qty;
   const unit = item ? item.unit : ''; const qty = Number(f.qty) || 0;
@@ -7690,9 +7690,12 @@ function FillForm({ onDone, onCancel }) {
       E('div', { className: 'frow' },
         E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'From *'), E('select', { className: 'fi', value: f.src, onChange: e => setF(p => ({ ...p, src: e.target.value, itemId: '', qty: '' })) }, opts())),
         E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'To *'), E('select', { className: 'fi', value: f.dst, onChange: e => set('dst', e.target.value) }, opts()))),
-      S.type === 'location' ? E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Product *'), E('select', { className: 'fi', value: f.itemId, onChange: e => set('itemId', e.target.value) },
-        E('option', { value: '' }, srcItems.length ? 'Select product…' : 'No stock in this location'), srcItems.map(i => E('option', { key: i.id, value: i.id }, i.name + ' (' + qtyFmt(i.qty) + ' ' + i.unit + ')')))) : null,
-      S.type === 'tank' && item ? E('div', { style: { fontSize: 13, marginBottom: 10 } }, 'Product: ', E('strong', null, item.name)) : null,
+      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Product *'),
+        S.type === 'tank'
+          ? E('select', { className: 'fi', value: item ? item.id : '', disabled: true }, E('option', { value: item ? item.id : '' }, item ? item.name + ' (the product in this tank)' : 'Source tank is empty'))
+          : E('select', { className: 'fi', value: f.itemId, onChange: e => set('itemId', e.target.value) },
+              E('option', { value: '' }, f.src ? 'Select product\u2026' : 'Choose From first'),
+              srcItems.map(i => E('option', { key: i.id, value: i.id }, i.code + ' \u2014 ' + i.name + '  (available here: ' + qtyFmt(prodStockSvc.getQty(i.id, S.id)) + ' ' + i.unit + ')')))),
       E('div', { className: 'frow' },
         E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Quantity ' + (unit ? '(' + unit + ') ' : '') + '*'), E('input', { className: 'fi', type: 'number', min: 0, step: 'any', value: f.qty, onChange: e => set('qty', e.target.value) }),
           item ? E('div', { style: { fontSize: 11, color: 'var(--txt3)', marginTop: 3 } }, 'Available: ' + qtyFmt(avail) + ' ' + unit) : null),
