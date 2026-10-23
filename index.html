@@ -1960,9 +1960,9 @@ const ORDER_STATUSES = ['Draft','Pending Approval','Approved','Rejected'];
 const mapOrder = r => r && ({ id: r.id, no: r.order_no, date: r.order_date, tankId: r.tank_id, itemId: r.item_id, product: r.product_name || '', batchNo: r.batch_no || '',
   qty: Number(r.output_qty || 0), unit: r.unit || '', hours: Number(r.hours_taken || 0), remarks: r.remarks || '', status: r.status, submittedBy: r.submitted_by,
   approvedBy: r.approved_by, approvedAt: r.approved_at, rejectReason: r.reject_reason, createdBy: r.created_by, createdAt: r.created_at });
-const mapCons = r => r && ({ id: r.id, no: r.cons_no, date: r.cons_date, orderId: r.order_id, forItemId: r.for_item_id, forProduct: r.for_product || '', itemId: r.item_id, product: r.product_name || '', tankId: r.source_tank_id,
-  planned: Number(r.planned_qty || 0), actual: Number(r.actual_qty || 0), unit: r.unit || '', remarks: r.remarks || '', status: r.status, submittedBy: r.submitted_by,
-  approvedBy: r.approved_by, approvedAt: r.approved_at, rejectReason: r.reject_reason, createdBy: r.created_by, createdAt: r.created_at });
+const mapCons = r => r && ({ id: r.id, no: r.cons_no, date: r.cons_date, orderId: r.order_id, forItemId: r.for_item_id, forProduct: r.for_product || '', remarks: r.remarks || '',
+  status: r.status, submittedBy: r.submitted_by, approvedBy: r.approved_by, approvedAt: r.approved_at, rejectReason: r.reject_reason, createdBy: r.created_by, createdAt: r.created_at, lines: [] });
+const mapConsLine = r => r && ({ id: r.id, consId: r.cons_id, itemId: r.item_id, product: r.product_name || '', tankId: r.source_tank_id, planned: Number(r.planned_qty || 0), actual: Number(r.actual_qty || 0), unit: r.unit || '', remarks: r.remarks || '' });
 const fmtHours = h => (h == null || h === '') ? '—' : fmtDur(Math.round(Number(h) * 3600)).replace(/\s?00s$/, '');
 const _approvalSvc = (table, mapFn, fnPrefix) => Object.assign(_modSvc(table, '', mapFn, 'order=created_at.desc'), {
   async submit(id, user) { await rpcCall(fnPrefix + '_submit', { p_id: id, p_user: user }); await this.loadAll(); },
@@ -1977,9 +1977,17 @@ const orderSvc = Object.assign(_approvalSvc('prod_orders', mapOrder, 'prod_order
   },
 });
 const consSvc = Object.assign(_approvalSvc('prod_consumptions', mapCons, 'prod_cons'), {
+  async loadAll() {
+    try {
+      const [h, l] = await Promise.all([pagedSelect('prod_consumptions', 'order=created_at.desc'), pagedSelect('prod_consumption_items', 'order=created_at.asc')]);
+      const by = {}; l.forEach(r => { (by[r.cons_id] = by[r.cons_id] || []).push(mapConsLine(r)); });
+      this._cache = h.map(r => ({ ...mapCons(r), lines: by[r.id] || [] })); this._err = null;
+    } catch (e) { this._err = friendlyDbError(e); this._cache = this._cache || []; }
+    return this._cache;
+  },
   async create(d) {
-    const r = await rpcCall('prod_cons_create', { p: { client_token: d.token, item_id: d.itemId, source_tank_id: d.tankId || null, order_id: d.orderId || null, for_item_id: d.forItemId || null,
-      planned_qty: Number(d.planned) || 0, actual_qty: Number(d.actual), cons_date: d.date, remarks: d.remarks || null, status: d.status, prefix: 'CON', user: d.user } });
+    const r = await rpcCall('prod_cons_create', { p: { client_token: d.token, order_id: d.orderId || null, for_item_id: d.forItemId || null, cons_date: d.date,
+      remarks: d.remarks || null, status: d.status, lines: d.lines, prefix: 'CON', user: d.user } });
     await this.loadAll(); return mapCons(r);
   },
 });
@@ -8511,7 +8519,7 @@ function opsCompute(D, cfg, o) {
     rs.forEach(r => (r.rawLines || []).forEach(l => { const k = l.name || '-'; const c = used.get(k) || { name: k, qty: 0, unit: l.unit }; c.qty += Number(l.qty || 0); used.set(k, c); }));
     // approved Consumption records recorded for this product
     consSvc.getAll().filter(c => c.status === 'Approved' && inWin(win, c.date, clockOf(c.approvedAt || c.createdAt)) && nameHit(c.forProduct || (orderSvc.getById(c.orderId) || {}).product, p.match || p.name))
-      .forEach(c => { const k = c.product || '-'; const u = used.get(k) || { name: k, qty: 0, unit: c.unit }; u.qty += c.actual; used.set(k, u); });
+      .forEach(c => (c.lines || []).forEach(l => { const k = l.product || '-'; const u = used.get(k) || { name: k, qty: 0, unit: l.unit }; u.qty += l.actual; used.set(k, u); }));
     const rows = (p.recipe || []).filter(x => x.material).map(x => {
       const hit = [...used.values()].filter(u => nameHit(u.name, x.material)); hit.forEach(h => used.delete(h.name));
       const consumed = hit.reduce((s, h) => s + h.qty, 0), plannedQ = (Number(x.planned) || 0) * win.days;
@@ -8963,7 +8971,7 @@ function useApprovalActions(svc, effect) {
   };
 }
 const ORDER_EFFECT = 'Approving adds the produced quantity to the tank. This cannot be repeated.';
-const CONS_EFFECT = 'Approving deducts the actual quantity from the source tank (if one was chosen). This cannot be repeated.';
+const CONS_EFFECT = 'Approving deducts each row\'s quantity from its tank (rows with a tank). This cannot be repeated.';
 const apprStatusColor = s => ({ Draft: 'gray', 'Pending Approval': 'amber', Approved: 'green', Rejected: 'red' }[s] || 'gray');
 const ApprBadge = ({ s }) => E(Badge, { c: apprStatusColor(s) }, s);
 function ApprButtons({ o, act, approver }) {
@@ -9116,107 +9124,142 @@ function OrdersPage({ mode }) {
 }
 
 // ── CONSUMPTION (raw material used: planned vs actual) ──
-function ConsDetail({ id, onClose }) {
+function ConsView({ id, onBack }) {
   const { user, isSA } = useCtx();
   const [ledger, setLedger] = useState(null); const [audit, setAudit] = useState(null);
   const act = useApprovalActions(consSvc, CONS_EFFECT);
   const c = consSvc.getById(id);
   useEffect(() => { ledgerSvc.forRef('CONS', id).then(setLedger); auditSvc.forEntity('consumption', id).then(setAudit); }, [id, c && c.status]);
-  if (!c) return null;
-  const tank = tankSvc.getById(c.tankId); const ord = orderSvc.getById(c.orderId); const diff = c.actual - c.planned;
-  return E(Modal, { title: 'Consumption ' + c.no, onClose, size: 'lg', footer: E(React.Fragment, null, E(ApprButtons, { o: c, act, approver: canApproveOps(user, isSA) }), E('button', { className: 'btn btn-outline', onClick: onClose }, 'Close')) },
-    E('div', { style: { display: 'flex', gap: 10, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' } }, E('strong', { style: { fontSize: 15 } }, c.product || '-'), E(ApprBadge, { s: c.status })),
-    E('div', { className: 'grid g3', style: { gap: 12, marginBottom: 14 } },
-      E(KV, { label: 'Planned' }, qtyFmt(c.planned) + ' ' + c.unit), E(KV, { label: 'Actual used' }, E('span', { style: { fontSize: 16 } }, qtyFmt(c.actual) + ' ' + c.unit)),
-      E(KV, { label: 'Variance' }, E('span', { style: { color: diff > 0 ? 'var(--red)' : 'var(--green)' } }, (diff > 0 ? '+' : '') + qtyFmt(diff) + ' ' + c.unit)),
-      E(KV, { label: 'Taken from tank' }, tank ? tank.name + ' (' + tank.code + ')' : 'Not linked to a tank'), E(KV, { label: 'Used for product' }, c.forProduct || (ord ? ord.product : '-')), E(KV, { label: 'Production order' }, ord ? ord.no : '-'),
-      E(KV, { label: 'Date' }, fmtDate(c.date)), E(KV, { label: 'Prepared by' }, c.createdBy || '-'), E(KV, { label: 'Approved / rejected by' }, c.approvedBy || '-'), E(KV, { label: 'Remarks' }, c.remarks || c.rejectReason || '-')),
-    E('div', { className: 'card-t', style: { margin: '6px 0 6px' } }, 'Stock ledger'), E(LedgerTable, { rows: ledger }),
-    E('div', { className: 'card-t', style: { margin: '14px 0 6px' } }, 'History'), E(AuditList, { rows: audit }));
+  if (!c) return E('div', null, E('button', { className: 'btn btn-outline', onClick: onBack }, '← Back'));
+  const ord = orderSvc.getById(c.orderId); const approver = canApproveOps(user, isSA); const canAct = approver && c.status === 'Pending Approval';
+  const purple = '#7c3aed';
+  const lines = c.lines || [];
+  return E('div', null,
+    E('div', { className: 'ph' },
+      E('div', { className: 'ph-l' }, E('h1', null, c.no), E('p', null, 'Consumption Voucher Detail')),
+      E('div', { className: 'ph-r' }, E('button', { className: 'btn btn-outline', onClick: onBack }, '← Back'), E('button', { className: 'btn btn-outline', onClick: () => window.print() }, E(Ic, { n: 'print', s: 13 }), ' Print'),
+        canAct ? E('button', { className: 'btn btn-success', onClick: () => act(c, 'approve') }, E(Ic, { n: 'check', s: 13, c: '#fff' }), ' Approve') : null,
+        canAct ? E('button', { className: 'btn btn-danger', onClick: () => act(c, 'reject') }, E(Ic, { n: 'x', s: 13 }), ' Reject') : null)),
+    E('div', { className: 'voucher' },
+      E('div', { className: 'voucher-head' },
+        E('div', null, E('div', { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 } },
+          E('img', { src: APP_LOGO, alt: '', style: { width: 52, height: 52, borderRadius: 7, objectFit: 'cover' } }),
+          E('div', { style: { fontSize: 13, fontWeight: 900, color: 'var(--navy)', letterSpacing: '.5px' } }, 'SOLOPOS PRODUCTION')),
+          E('div', { className: 'voucher-title' }, 'Consumption Voucher (CON)')),
+        E('div', { style: { textAlign: 'right' } }, E('div', { className: 'voucher-no', style: { color: purple } }, c.no), E('div', { style: { fontSize: 12, color: 'var(--txt2)', marginTop: 4 } }, fmtDate(c.date)),
+          E('div', { style: { marginTop: 6 } }, E(ApprBadge, { s: c.status })))),
+      E('div', { className: 'voucher-meta' }, [['Used For Product', c.forProduct || (ord ? ord.product : '-')], ['Production Order', ord ? ord.no : '-'], ['Prepared By', c.createdBy || '-'], ['Remarks', c.remarks || '-']]
+        .map(([l, v]) => E('div', { key: l, className: 'voucher-field' }, E('div', { className: 'voucher-field-lbl' }, l), E('div', { className: 'voucher-field-val' }, v)))),
+      E('div', { className: 'tw', style: { marginBottom: 14 } }, E('table', null,
+        E('thead', null, E('tr', null, ['#', 'Code', 'Item Name', 'UOM', 'Tank', 'Planned', 'Qty Consumed', 'Variance', 'Remarks'].map(h => E('th', { key: h }, h)))),
+        E('tbody', null, lines.map((l, i) => { const it = prodItemSvc.getById(l.itemId); const d = l.actual - l.planned; return E('tr', { key: l.id || i },
+          E('td', null, String(i + 1)), E('td', null, E('span', { style: { fontFamily: 'var(--mono)', fontWeight: 600, fontSize: 11 } }, it ? it.code : '-')),
+          E('td', null, E('span', { style: { fontWeight: 600 } }, l.product || '-')), E('td', null, l.unit || '-'), E('td', null, (tankSvc.getById(l.tankId) || {}).name || '-'),
+          E('td', null, qtyFmt(l.planned)), E('td', null, E('span', { style: { fontWeight: 700, color: purple, fontSize: 14 } }, qtyFmt(l.actual) + ' ' + (l.unit || ''))),
+          E('td', null, E('span', { style: { fontWeight: 700, color: d > 0 ? 'var(--red)' : 'var(--green)' } }, (d > 0 ? '+' : '') + qtyFmt(d))), E('td', null, l.remarks || '-')); })))),
+      c.status === 'Approved' ? E('div', { className: 'alert alert-green' }, E(Ic, { n: 'check', s: 13 }), ' Approved by ', E('strong', null, c.approvedBy || '-'), ' on ', fmtDate(c.approvedAt)) : null,
+      c.status === 'Rejected' ? E('div', { className: 'alert alert-red' }, E(Ic, { n: 'x', s: 13 }), ' Rejected: ', c.rejectReason || '-') : null,
+      E('div', { className: 'voucher-sign' }, ['Prepared By', 'Verified By', 'Approved By'].map(l => E('div', { key: l, className: 'vsign' }, E('div', { className: 'vsign-line' }), E('div', null, l))))),
+    E('div', { className: 'no-print', style: { maxWidth: 800, margin: '14px auto 0' } },
+      E('div', { className: 'card-t', style: { margin: '6px 0' } }, 'Stock ledger'), E(LedgerTable, { rows: ledger }),
+      E('div', { className: 'card-t', style: { margin: '14px 0 6px' } }, 'History'), E(AuditList, { rows: audit })));
 }
 
 function ConsForm({ onDone, onCancel }) {
   const { toast, user } = useCtx();
-  const catalog = catalogSvc.get(); const token = useRef(uid() + uid()); const lock = useRef(false);
-  const [busy, setBusy] = useState(false);
-  const [f, setF] = useState({ itemId: '', forItemId: '', tankId: '', orderId: '', planned: '', actual: '', date: today(), remarks: '' });
+  const catalog = catalogSvc.get(); const tanks = tanksFor();
+  const token = useRef(uid() + uid()); const lock = useRef(false); const [busy, setBusy] = useState(false);
+  const blank = () => ({ itemId: '', tankId: '', planned: '', actual: '', remarks: '' });
+  const [f, setF] = useState({ date: today(), forItemId: '', orderId: '', remarks: '' });
+  const [rows, setRows] = useState([blank()]);
   const set = (k, v) => setF(p => ({ ...p, [k]: v }));
-  const item = catalog.find(c => c.id === f.itemId); const tank = tankSvc.getById(f.tankId);
-  const planned = Number(f.planned) || 0; const actual = Number(f.actual) || 0;
-  const avail = tank && item ? (tank.itemId === item.id ? tank.qty : 0) : null;
-  const problems = [];
-  if (!item) problems.push('Choose the raw material');
-  if (!(actual > 0)) problems.push('Enter the actual quantity used');
-  if (tank && item && actual > avail) problems.push(tank.name + ' holds only ' + qtyFmt(avail) + ' ' + item.unit + ' of ' + item.name);
+  const setRow = (i, k, v) => setRows(rs => rs.map((r, x) => x === i ? { ...r, [k]: v } : r));
+  const purple = '#7c3aed';
+  const valid = rows.filter(r => r.itemId || r.actual);
+  const rowProblem = r => { const it = catalog.find(c => c.id === r.itemId); const t = tankSvc.getById(r.tankId); const a = Number(r.actual) || 0;
+    if (!it) return 'Choose the raw material on every row'; if (!(a > 0)) return 'Enter the quantity consumed for ' + it.name;
+    if (t && a > (t.itemId === it.id ? t.qty : 0)) return t.name + ' holds only ' + qtyFmt(t.itemId === it.id ? t.qty : 0) + ' ' + it.unit + ' of ' + it.name; return null; };
   const submit = async () => {
     if (lock.current) return;
-    if (problems.length) { toast(problems[0], 'error'); return; }
+    if (!valid.length) { toast('Add at least one raw material', 'error'); return; }
+    for (const r of valid) { const p = rowProblem(r); if (p) { toast(p, 'error'); return; } }
     lock.current = true; setBusy(true);
-    try { const c = await consSvc.create({ token: token.current, itemId: item.id, tankId: f.tankId, orderId: f.orderId, forItemId: f.forItemId, planned, actual, date: f.date, remarks: f.remarks, status: 'Pending Approval', user: user && user.name });
+    try { const c = await consSvc.create({ token: token.current, orderId: f.orderId, forItemId: f.forItemId, date: f.date, remarks: f.remarks, status: 'Pending Approval', user: user && user.name,
+        lines: valid.map(r => ({ item_id: r.itemId, source_tank_id: r.tankId || null, planned_qty: Number(r.planned) || 0, actual_qty: Number(r.actual), remarks: r.remarks || null })) });
       toast(c.no + ' submitted — Pending Approval', 'success'); onDone(); }
     catch (e) { toast(e.message, 'error'); lock.current = false; setBusy(false); }
   };
+  const th = h => E('th', { key: h, style: { padding: '8px 10px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.5px', color: purple, textAlign: 'left', borderBottom: '2px solid #ede9fe' } }, h);
   return E('div', null,
-    E('div', { className: 'ph' }, E('div', { className: 'ph-l' }, E('h1', null, 'New Consumption'), E('p', null, 'Record the raw material used — planned against actual')),
-      E('div', { className: 'ph-r' }, E('button', { className: 'btn btn-outline', onClick: onCancel, disabled: busy }, '← Cancel'))),
-    E('div', { className: 'card', style: { maxWidth: 780 } },
-      E('div', { className: 'frow' },
-        E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Raw material *'), E('select', { className: 'fi', value: f.itemId, onChange: e => set('itemId', e.target.value) },
-          E('option', { value: '' }, 'Select raw material…'), catalog.map(c => E('option', { key: c.id, value: c.id }, c.code + ' — ' + c.name)))),
-        E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Taken from tank (optional)'), E('select', { className: 'fi', value: f.tankId, onChange: e => set('tankId', e.target.value) },
-          E('option', { value: '' }, 'Not linked — record only'), tanksFor().map(t => E('option', { key: t.id, value: t.id, disabled: ['Maintenance', 'Disabled'].includes(t.status) }, t.name + ' — ' + (t.product ? qtyFmt(t.qty) + ' ' + t.unit + ' ' + t.product : 'empty')))))),
+    E('div', { className: 'ph' }, E('div', { className: 'ph-l' }, E('h1', null, 'New Consumption Entry'), E('p', null, 'Record the raw materials consumed — planned against actual')),
+      E('div', { className: 'ph-r' }, E('button', { className: 'btn btn-outline', onClick: onCancel, disabled: busy }, '← Cancel'),
+        E('button', { className: 'btn btn-primary', style: { background: purple }, onClick: submit, disabled: busy }, E(Ic, { n: 'check', s: 13, c: '#fff' }), ' Submit for Approval'))),
+    E('div', { className: 'alert', style: { background: '#f5f3ff', border: '1px solid #ede9fe', color: purple, padding: '9px 12px', borderRadius: 'var(--r)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 } },
+      E(Ic, { n: 'info', s: 13 }), 'Quantities are deducted from the chosen tank when the entry is approved. A row with no tank is recorded only.'),
+    E('div', { className: 'card', style: { marginBottom: 12 } },
       E('div', { className: 'frow3' },
-        E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Planned ' + (item ? '(' + item.unit + ')' : '')), E('input', { className: 'fi', type: 'number', min: 0, step: 'any', value: f.planned, placeholder: 'e.g. 3', onChange: e => set('planned', e.target.value) })),
-        E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Actual used ' + (item ? '(' + item.unit + ')' : '') + ' *'), E('input', { className: 'fi', type: 'number', min: 0, step: 'any', value: f.actual, placeholder: 'e.g. 3.8', onChange: e => set('actual', e.target.value) })),
-        E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Date *'), E('input', { className: 'fi', type: 'date', value: f.date, onChange: e => set('date', e.target.value) }))),
-      (planned > 0 || actual > 0) ? E('div', { style: { fontWeight: 800, fontSize: 14, margin: '0 0 10px', color: actual > planned ? 'var(--red)' : 'var(--green)' } },
-        qtyFmt(planned) + ' / ' + qtyFmt(actual) + ' ' + (item ? item.unit : '') + '   (' + (actual - planned > 0 ? '+' : '') + qtyFmt(actual - planned) + ')') : null,
-      E('div', { className: 'frow' },
+        E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'CON No.'), E('input', { className: 'fi', value: 'Assigned on save', readOnly: true, style: { background: 'var(--off2)', fontFamily: 'var(--mono)' } })),
+        E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Date *'), E('input', { className: 'fi', type: 'date', value: f.date, onChange: e => set('date', e.target.value) })),
         E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Used for product (e.g. LABSA 3 MT)'), E('select', { className: 'fi', value: f.forItemId, onChange: e => set('forItemId', e.target.value) },
-          E('option', { value: '' }, 'Not specified'), catalog.map(c => E('option', { key: c.id, value: c.id }, c.code + ' \u2014 ' + c.name)))),
+          E('option', { value: '' }, 'Not specified'), catalog.map(c => E('option', { key: c.id, value: c.id }, c.code + ' — ' + c.name))))),
+      E('div', { className: 'frow' },
         E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Production order (optional)'), E('select', { className: 'fi', value: f.orderId, onChange: e => { const o = orderSvc.getById(e.target.value); setF(p => ({ ...p, orderId: e.target.value, forItemId: o && !p.forItemId ? o.itemId : p.forItemId })); } },
-          E('option', { value: '' }, 'None'), orderSvc.getAll().map(o => E('option', { key: o.id, value: o.id }, o.no + ' \u2014 ' + o.product + ' (' + fmtDate(o.date) + ')'))))),
-      E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Remarks'), E('input', { className: 'fi', value: f.remarks, onChange: e => set('remarks', e.target.value) })),
-      problems.length && (item || actual) ? E('div', { className: 'alert alert-red' }, E(Ic, { n: 'alert', s: 13 }), problems[0]) : null,
-      E('div', { style: { display: 'flex', gap: 8, justifyContent: 'flex-end', paddingTop: 10, borderTop: '1px solid var(--border)' } },
-        E('button', { className: 'btn btn-primary', disabled: busy, onClick: submit }, busy ? 'Working…' : 'Submit for Approval'))));
+          E('option', { value: '' }, 'None'), orderSvc.getAll().map(o => E('option', { key: o.id, value: o.id }, o.no + ' — ' + o.product + ' (' + fmtDate(o.date) + ')')))),
+        E('div', { className: 'fg' }, E('label', { className: 'flbl' }, 'Remarks / Description'), E('input', { className: 'fi', value: f.remarks, onChange: e => set('remarks', e.target.value), placeholder: 'Brief description' })))),
+    E('div', { className: 'card' },
+      E('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 } },
+        E('div', { style: { fontWeight: 700, fontSize: 13, color: 'var(--navy)' } }, 'Materials Consumed'), E('div', { style: { fontSize: 11, color: 'var(--txt3)' } }, String(rows.length) + ' rows')),
+      E('div', { style: { overflowX: 'auto' } }, E('table', { style: { width: '100%', borderCollapse: 'collapse', minWidth: 760 } },
+        E('thead', null, E('tr', { style: { background: '#f5f3ff' } }, ['Raw Material', 'UOM', 'Taken From Tank', 'Planned', 'Qty Consumed', 'Remarks', ''].map(th))),
+        E('tbody', null, rows.map((r, i) => { const it = catalog.find(c => c.id === r.itemId); return E('tr', { key: i, style: { borderBottom: '1px solid var(--border)' } },
+          E('td', { style: { padding: '6px 6px 6px 0' } }, E('select', { className: 'fi', style: { fontSize: 12, padding: '6px 8px' }, value: r.itemId, onChange: e => setRow(i, 'itemId', e.target.value) },
+            E('option', { value: '' }, 'Select raw material...'), catalog.map(c => E('option', { key: c.id, value: c.id }, c.code + ' — ' + c.name)))),
+          E('td', { style: { padding: 6 } }, E('strong', null, it ? it.unit : '-')),
+          E('td', { style: { padding: 6 } }, E('select', { className: 'fi', style: { fontSize: 12, padding: '6px 8px', minWidth: 150 }, value: r.tankId, onChange: e => setRow(i, 'tankId', e.target.value) },
+            E('option', { value: '' }, 'Not linked (record only)'), tanks.map(t => E('option', { key: t.id, value: t.id, disabled: ['Maintenance', 'Disabled'].includes(t.status) },
+              t.name + ' — ' + (t.product ? qtyFmt(t.qty) + ' ' + t.unit + ' ' + t.product : 'empty'))))),
+          E('td', { style: { padding: 6 } }, E('input', { className: 'fi', style: { fontSize: 12, padding: '6px 8px', width: 90 }, type: 'number', min: 0, step: 'any', value: r.planned, placeholder: '3', onChange: e => setRow(i, 'planned', e.target.value) })),
+          E('td', { style: { padding: 6 } }, E('input', { className: 'fi', style: { fontSize: 12, padding: '6px 8px', width: 90 }, type: 'number', min: 0, step: 'any', value: r.actual, placeholder: '3.8', onChange: e => setRow(i, 'actual', e.target.value) })),
+          E('td', { style: { padding: 6 } }, E('input', { className: 'fi', style: { fontSize: 12, padding: '6px 8px' }, value: r.remarks, onChange: e => setRow(i, 'remarks', e.target.value) })),
+          E('td', { style: { padding: 6 } }, E('button', { className: 'btn btn-danger btn-icon', style: { width: 28, height: 28, minWidth: 28, padding: 0 }, disabled: rows.length === 1, onClick: () => setRows(rs => rs.filter((_, x) => x !== i)) }, E(Ic, { n: 'x', s: 12 })))); })))),
+      E('div', { style: { marginTop: 10 } }, E('button', { className: 'btn btn-outline btn-sm', style: { color: purple, borderColor: '#ede9fe' }, onClick: () => setRows(rs => [...rs, blank()]) }, E(Ic, { n: 'plus', s: 12 }), ' Add Row'))));
 }
 
 function ConsumptionPage({ mode }) {
-  const { user, isSA, setModal } = useCtx();
+  const { user, isSA } = useCtx();
   const appr = mode === 'approvals';
   const { loading } = useLoad([() => consSvc.loadAll(), () => orderSvc.loadAll(), () => tankSvc.loadAll(), () => prodItemSvc.loadAll()]);
   const act = useApprovalActions(consSvc, CONS_EFFECT);
-  const [view, setView] = useState('list'); const [q, setQ] = useState(''); const [st, setSt] = useState(appr ? 'Pending Approval' : ''); const [from, setFrom] = useState(''); const [to, setTo] = useState('');
-  const approver = canApproveOps(user, isSA);
+  const [view, setView] = useState('list'); const [viewId, setViewId] = useState(null);
+  const [q, setQ] = useState(''); const [st, setSt] = useState(appr ? 'Pending Approval' : '');
+  const approver = canApproveOps(user, isSA); const purple = '#7c3aed';
   const all = consSvc.getAll();
-  const rows = all.filter(c => (!st || c.status === st) && (!from || c.date >= from) && (!to || c.date <= to) && (!q || [c.no, c.product, (tankSvc.getById(c.tankId) || {}).name].join(' ').toLowerCase().includes(q.toLowerCase())));
+  const rows = all.filter(c => (!st || c.status === st) && (!q || [c.no, c.forProduct, ...(c.lines || []).map(l => l.product)].join(' ').toLowerCase().includes(q.toLowerCase())));
   if (view === 'new') return E(ConsForm, { onDone: async () => { setView('list'); await consSvc.loadAll(); }, onCancel: () => setView('list') });
-  const ok = all.filter(c => c.status === 'Approved');
-  const body = E(React.Fragment, null,
+  if (view === 'view') return E(ConsView, { id: viewId, onBack: () => setView('list') });
+  const open = c => { setViewId(c.id); setView('view'); };
+  const table = E(React.Fragment, null,
     E(SetupNotice, { svcs: [consSvc] }),
-    E('div', { className: 'grid g4', style: { marginBottom: 12 } },
-      E(Stat, { label: 'Pending approval', value: all.filter(c => c.status === 'Pending Approval').length, color: 'var(--amber)', onClick: () => setSt('Pending Approval') }),
-      E(Stat, { label: 'Approved', value: ok.length, color: 'var(--green)' }),
-      E(Stat, { label: 'Planned (approved)', value: qtyFmt(ok.reduce((s, c) => s + c.planned, 0)), color: '#0891b2' }),
-      E(Stat, { label: 'Actual (approved)', value: qtyFmt(ok.reduce((s, c) => s + c.actual, 0)), color: '#7c3aed' })),
-    E('div', { className: 'sb-bar', style: { flexWrap: 'wrap', gap: 8 } },
-      E('div', { className: 'si', style: { flex: '1 1 200px' } }, E('div', { className: 'si-ico' }, E(Ic, { n: 'search', s: 13, c: 'var(--txt3)' })), E('input', { placeholder: 'Search number, material, tank…', value: q, onChange: e => setQ(e.target.value) })),
-      E('select', { className: 'fi', style: { width: 160 }, value: st, onChange: e => setSt(e.target.value) }, E('option', { value: '' }, 'All statuses'), ORDER_STATUSES.filter(s => s !== 'Draft').map(s => E('option', { key: s }, s))),
-      E('input', { className: 'fi', type: 'date', style: { width: 140 }, value: from, onChange: e => setFrom(e.target.value) }), E('input', { className: 'fi', type: 'date', style: { width: 140 }, value: to, onChange: e => setTo(e.target.value) })),
+    E('div', { className: 'sb-bar' },
+      E('div', { className: 'si' }, E('div', { className: 'si-ico' }, E(Ic, { n: 'search', s: 13, c: 'var(--txt3)' })), E('input', { placeholder: 'Search CON No. / Material / Product...', value: q, onChange: e => setQ(e.target.value) })),
+      appr ? E('select', { className: 'fi', style: { width: 170 }, value: st, onChange: e => setSt(e.target.value) }, E('option', { value: '' }, 'All statuses'), ORDER_STATUSES.filter(s => s !== 'Draft').map(s => E('option', { key: s }, s))) : null),
     loading && !all.length ? E(LoadingBlock, { text: 'Loading consumption…' }) :
     E('div', { className: 'tw' }, E('table', null,
-      E('thead', null, E('tr', null, ['Consumption No.', 'Date', 'Raw material', 'Tank', 'Planned / Actual', 'Variance', 'Status', 'Actions'].map(h => E('th', { key: h }, h)))),
-      E('tbody', null, rows.length === 0 ? E('tr', null, E('td', { colSpan: 8 }, E(Empty, { icon: '🧪', title: all.length ? 'No records match these filters' : (appr ? 'Nothing to approve' : 'No consumption yet'), text: all.length || appr ? '' : 'Click "New Consumption" to record raw material used.' })))
-        : rows.map(c => { const d = c.actual - c.planned; return E('tr', { key: c.id, style: { cursor: 'pointer' }, onClick: () => setModal(E(ConsDetail, { id: c.id, onClose: () => setModal(null) })) },
-          E('td', null, E('span', { style: { color: '#d97706', fontWeight: 700, fontFamily: 'var(--mono)', fontSize: 11 } }, c.no)), E('td', null, fmtDate(c.date)), E('td', null, E('strong', null, c.product), (c.forProduct || (orderSvc.getById(c.orderId) || {}).product) ? E('div', { style: { fontSize: 10, color: 'var(--txt3)' } }, 'for ' + (c.forProduct || orderSvc.getById(c.orderId).product)) : null),
-          E('td', null, (tankSvc.getById(c.tankId) || {}).name || '-'), E('td', null, E('strong', null, qtyFmt(c.planned) + ' / ' + qtyFmt(c.actual) + ' ' + c.unit)),
-          E('td', null, E('span', { style: { fontWeight: 700, color: d > 0 ? 'var(--red)' : 'var(--green)' } }, (d > 0 ? '+' : '') + qtyFmt(d))),
-          E('td', null, E(ApprBadge, { s: c.status })), E('td', null, E(ApprButtons, { o: c, act, approver }))); })))));
-  if (appr) return body;
+      E('thead', null, E('tr', null, ['CON No.', 'Date', 'Used For', 'Materials', 'Planned / Actual', 'Status', 'Action'].map(h => E('th', { key: h }, h)))),
+      E('tbody', null, rows.length === 0 ? E('tr', null, E('td', { colSpan: 7 }, E('div', { className: 'te' }, appr ? 'Nothing to approve.' : 'No consumption records yet.')))
+        : rows.map(c => { const ls = c.lines || []; const pl = ls.reduce((s, l) => s + l.planned, 0), ac = ls.reduce((s, l) => s + l.actual, 0); const u = ls[0] ? ls[0].unit : ''; return E('tr', { key: c.id, style: { cursor: 'pointer' }, onClick: () => open(c) },
+          E('td', null, E('span', { style: { color: purple, fontWeight: 700, fontFamily: 'var(--mono)', fontSize: 11 } }, c.no)), E('td', null, fmtDate(c.date)),
+          E('td', null, E('strong', null, c.forProduct || (orderSvc.getById(c.orderId) || {}).product || '-')),
+          E('td', null, E('span', { style: { color: 'var(--red)', fontWeight: 600 } }, '− ' + ls.length + ' item' + (ls.length === 1 ? '' : 's')), ls[0] ? E('div', { style: { fontSize: 10, color: 'var(--txt3)' } }, ls.slice(0, 2).map(l => l.product).join(', ') + (ls.length > 2 ? '…' : '')) : null),
+          E('td', null, E('strong', null, qtyFmt(pl) + ' / ' + qtyFmt(ac) + (ls.length === 1 ? ' ' + u : ''))),
+          E('td', null, E(ApprBadge, { s: c.status })),
+          E('td', { onClick: e => e.stopPropagation() }, E('div', { style: { display: 'flex', gap: 4, flexWrap: 'wrap' } },
+            E('button', { className: 'btn btn-outline btn-sm btn-icon', onClick: () => open(c) }, E(Ic, { n: 'eye', s: 12 })), E(ApprButtons, { o: c, act, approver })))); })))),
+    E('div', { style: { marginTop: 8, fontSize: 11, color: 'var(--txt3)', textAlign: 'center' } }, '💡 Click any row to view the materials consumed'));
+  if (appr) return table;
   return E('div', null,
-    E('div', { className: 'ph' }, E('div', { className: 'ph-l' }, E('h1', null, 'Consumption'), E('p', null, 'Raw material used — planned against actual')),
-      E('div', { className: 'ph-r' }, E('button', { className: 'btn btn-primary', onClick: () => setView('new') }, E(Ic, { n: 'plus', s: 13, c: '#fff' }), ' New Consumption'))), body);
+    E('div', { className: 'ph' }, E('div', { className: 'ph-l' }, E('h1', null, 'Consumption'), E('p', null, String(all.length) + ' records — raw material used, planned against actual')),
+      E('div', { className: 'ph-r' }, E('button', { className: 'btn btn-primary', style: { background: purple }, onClick: () => setView('new') }, E(Ic, { n: 'plus', s: 13, c: '#fff' }), ' + New Consumption'))), table);
 }
 
 // Approvals hub: fills, production orders and consumption in one place

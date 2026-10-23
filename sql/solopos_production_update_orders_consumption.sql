@@ -1,5 +1,5 @@
 -- Run this ONCE in Supabase > SQL Editor (needs solopos_production_app.sql already run before).
--- Adds Production orders + Consumption to the Production app. Safe to run again.
+-- Adds / updates Production orders + Consumption (multi-line vouchers) in the Production app. Safe to run again.
 
 -- ================================================================
 --  PRODUCTION ORDERS  &  CONSUMPTION   (moved here from the Store app)
@@ -55,10 +55,35 @@ alter table prod_consumptions add column if not exists for_product text;
 create index if not exists idx_prod_cons_status on prod_consumptions(status);
 create index if not exists idx_prod_cons_date   on prod_consumptions(cons_date desc);
 
+-- a consumption voucher holds one or more raw-material lines
+create table if not exists prod_consumption_items (
+  id              uuid          primary key default gen_random_uuid(),
+  cons_id         uuid          not null references prod_consumptions(id) on delete cascade,
+  item_id         uuid          not null references prod_items(id) on delete restrict,
+  product_name    text,
+  source_tank_id  uuid          references prod_tanks(id) on delete restrict,           -- optional: deduct from this tank on approval
+  planned_qty     numeric(14,3) not null default 0 check (planned_qty >= 0),
+  actual_qty      numeric(14,3) not null check (actual_qty > 0),
+  unit            text,
+  remarks         text,
+  created_at      timestamptz   not null default now()
+);
+create index if not exists idx_prod_cons_items_cons on prod_consumption_items(cons_id);
+-- (older single-item vouchers) the item / quantity now live on the lines
+alter table prod_consumptions alter column item_id drop not null;
+alter table prod_consumptions alter column actual_qty drop not null;
+alter table prod_consumptions drop constraint if exists prod_consumptions_actual_qty_check;
+insert into prod_consumption_items(cons_id, item_id, product_name, source_tank_id, planned_qty, actual_qty, unit, remarks)
+select c.id, c.item_id, c.product_name, c.source_tank_id, c.planned_qty, c.actual_qty, c.unit, null
+  from prod_consumptions c
+ where c.item_id is not null and c.actual_qty > 0 and not exists (select 1 from prod_consumption_items l where l.cons_id = c.id);
+
 do $$ declare t text; begin
-  foreach t in array array['prod_orders','prod_consumptions'] loop
-    execute format('drop trigger if exists trg_%s_touch on %I', t, t);
-    execute format('create trigger trg_%s_touch before update on %I for each row execute function _p_touch()', t, t);
+  foreach t in array array['prod_orders','prod_consumptions','prod_consumption_items'] loop
+    if t <> 'prod_consumption_items' then
+      execute format('drop trigger if exists trg_%s_touch on %I', t, t);
+      execute format('create trigger trg_%s_touch before update on %I for each row execute function _p_touch()', t, t);
+    end if;
     execute format('alter table %I enable row level security', t);
     execute format('drop policy if exists allow_anon_all on %I', t);
     execute format('create policy allow_anon_all on %I for all to anon using (true) with check (true)', t);
@@ -128,38 +153,53 @@ end $$;
 
 create or replace function prod_cons_create(p jsonb) returns jsonb language plpgsql as $$
 declare r prod_consumptions%rowtype; tok text := nullif(p->>'client_token',''); it prod_items%rowtype; tk prod_tanks%rowtype; fi prod_items%rowtype; fid uuid := nullif(p->>'for_item_id','')::uuid;
-        pl numeric := coalesce((p->>'planned_qty')::numeric, 0); ac numeric := (p->>'actual_qty')::numeric;
-        st text := coalesce(nullif(p->>'status',''),'Pending Approval'); u text := p->>'user'; num text; tid uuid := nullif(p->>'source_tank_id','')::uuid; oid uuid := nullif(p->>'order_id','')::uuid;
+        st text := coalesce(nullif(p->>'status',''),'Pending Approval'); u text := p->>'user'; num text; oid uuid := nullif(p->>'order_id','')::uuid;
+        ln jsonb; lines jsonb := p->'lines'; ac numeric; pl numeric; tid uuid; n int := 0;
 begin
   if tok is not null then select * into r from prod_consumptions where client_token = tok; if found then return to_jsonb(r); end if; end if;
   if st not in ('Draft','Pending Approval') then raise exception 'A new consumption can only be Draft or Pending Approval'; end if;
-  select * into it from prod_items where id = (p->>'item_id')::uuid; if not found then raise exception 'Select the raw material'; end if;
-  if ac is null or ac <= 0 then raise exception 'Enter the actual quantity used'; end if;
-  if pl < 0 then raise exception 'Planned quantity cannot be negative'; end if;
-  if tid is not null then select * into tk from prod_tanks where id = tid; if not found then raise exception 'Tank not found'; end if; end if;
+  if lines is null or jsonb_typeof(lines) <> 'array' or jsonb_array_length(lines) = 0 then raise exception 'Add at least one raw material'; end if;
   if oid is not null and not exists (select 1 from prod_orders where id = oid) then raise exception 'Production order not found'; end if;
   if fid is not null then select * into fi from prod_items where id = fid; if not found then raise exception 'Product not found'; end if; end if;
+  -- validate every line before anything is written
+  for ln in select * from jsonb_array_elements(lines) loop
+    select * into it from prod_items where id = nullif(ln->>'item_id','')::uuid; if not found then raise exception 'Select the raw material on every line'; end if;
+    ac := (ln->>'actual_qty')::numeric; pl := coalesce((ln->>'planned_qty')::numeric, 0);
+    if ac is null or ac <= 0 then raise exception 'Enter the actual quantity used for %', it.name; end if;
+    if pl < 0 then raise exception 'Planned quantity cannot be negative'; end if;
+    tid := nullif(ln->>'source_tank_id','')::uuid;
+    if tid is not null then select * into tk from prod_tanks where id = tid; if not found then raise exception 'Tank not found'; end if; end if;
+  end loop;
   num := prod_next_no('cons', coalesce(nullif(p->>'prefix',''),'CON'));
-  insert into prod_consumptions(cons_no, client_token, cons_date, order_id, for_item_id, for_product, item_id, product_name, source_tank_id, planned_qty, actual_qty, unit, remarks, status, submitted_by, created_by)
-  values (num, tok, coalesce(nullif(p->>'cons_date','')::date, current_date), oid, fid, fi.name, it.id, it.name, tid, pl, ac, it.unit, p->>'remarks', st, case when st = 'Pending Approval' then u end, u)
+  insert into prod_consumptions(cons_no, client_token, cons_date, order_id, for_item_id, for_product, remarks, status, submitted_by, created_by)
+  values (num, tok, coalesce(nullif(p->>'cons_date','')::date, current_date), oid, fid, fi.name, p->>'remarks', st, case when st = 'Pending Approval' then u end, u)
   on conflict (client_token) do nothing returning * into r;
   if not found then select * into r from prod_consumptions where client_token = tok; return to_jsonb(r); end if;
-  perform _p_audit('consumption', r.id, r.cons_no, 'Created', null, r.status, u, jsonb_build_object('planned', pl, 'actual', ac));
+  for ln in select * from jsonb_array_elements(lines) loop
+    select * into it from prod_items where id = (ln->>'item_id')::uuid;
+    insert into prod_consumption_items(cons_id, item_id, product_name, source_tank_id, planned_qty, actual_qty, unit, remarks)
+    values (r.id, it.id, it.name, nullif(ln->>'source_tank_id','')::uuid, coalesce((ln->>'planned_qty')::numeric, 0), (ln->>'actual_qty')::numeric, it.unit, nullif(ln->>'remarks',''));
+    n := n + 1;
+  end loop;
+  perform _p_audit('consumption', r.id, r.cons_no, 'Created', null, r.status, u, jsonb_build_object('lines', n));
   return to_jsonb(r);
 end $$;
 
 create or replace function prod_cons_approve(p_id uuid, p_user text) returns jsonb language plpgsql as $$
-declare r prod_consumptions%rowtype; bal numeric;
+declare r prod_consumptions%rowtype; l prod_consumption_items%rowtype; bal numeric; n int := 0;
 begin
   select * into r from prod_consumptions where id = p_id for update; if not found then raise exception 'Consumption not found'; end if;
   if r.status = 'Approved' then raise exception 'Consumption % is already approved — stock was not deducted again', r.cons_no; end if;
   if r.status <> 'Pending Approval' then raise exception 'Consumption % is % and cannot be approved', r.cons_no, r.status; end if;
-  if r.source_tank_id is not null then
-    bal := _p_tank_out(r.source_tank_id, r.item_id, r.actual_qty);
-    perform _p_ledger('CONSUMPTION', 'CONS', r.id, r.cons_no, 'tank', r.source_tank_id, r.item_id, 'OUT', r.actual_qty, bal, p_user, 'Raw material consumed');
-  end if;
+  for l in select * from prod_consumption_items where cons_id = p_id order by created_at, id loop
+    if l.source_tank_id is not null then
+      bal := _p_tank_out(l.source_tank_id, l.item_id, l.actual_qty);
+      perform _p_ledger('CONSUMPTION', 'CONS', r.id, r.cons_no, 'tank', l.source_tank_id, l.item_id, 'OUT', l.actual_qty, bal, p_user, 'Raw material consumed');
+      n := n + 1;
+    end if;
+  end loop;
   update prod_consumptions set status = 'Approved', approved_by = p_user, approved_at = now() where id = p_id returning * into r;
-  perform _p_audit('consumption', r.id, r.cons_no, case when r.source_tank_id is null then 'Approved' else 'Approved — stock deducted' end, 'Pending Approval', 'Approved', p_user, jsonb_build_object('planned', r.planned_qty, 'actual', r.actual_qty));
+  perform _p_audit('consumption', r.id, r.cons_no, case when n = 0 then 'Approved' else 'Approved — stock deducted' end, 'Pending Approval', 'Approved', p_user, jsonb_build_object('tank_lines', n));
   return to_jsonb(r);
 end $$;
 
