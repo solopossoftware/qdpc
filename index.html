@@ -8986,6 +8986,7 @@ function OrderForm({ onDone, onCancel }) {
   const tanks = tanksFor(); const catalog = catalogSvc.get();
   const token = useRef(uid() + uid()); const lock = useRef(false);
   const [busy, setBusy] = useState(false);
+  const known = useRef(new Set()); const [newItem, setNewItem] = useState(false); const [, setTick] = useState(0);
   const [f, setF] = useState({ tankId: '', itemId: '', batchNo: '', qty: '', hours: '', date: today(), remarks: '' });
   const set = (k, v) => setF(p => ({ ...p, [k]: v }));
   const tank = tankSvc.getById(f.tankId); const item = catalog.find(c => c.id === f.itemId);
@@ -9036,8 +9037,10 @@ function OrderForm({ onDone, onCancel }) {
       E('div', { style: { overflowX: 'auto' } }, E('table', { style: { width: '100%', borderCollapse: 'collapse', minWidth: 520 } },
         E('thead', null, E('tr', { style: { background: '#f0fdfa' } }, ['Item', 'UOM', 'Qty Produced'].map(h => E('th', { key: h, style: { padding: '8px 10px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: teal, textAlign: 'left', borderBottom: '2px solid #ccfbf1' } }, h)))),
         E('tbody', null, E('tr', null,
-          E('td', { style: { padding: '6px 6px 6px 0' } }, E('select', { className: 'fi', style: { fontSize: 12, padding: '6px 8px' }, value: f.itemId, onChange: e => set('itemId', e.target.value) },
-            E('option', { value: '' }, 'Select item…'), catalog.map(c => E('option', { key: c.id, value: c.id }, c.code + ' — ' + c.name)))),
+          E('td', { style: { padding: '6px 6px 6px 0' } }, E('div', { style: { display: 'flex', gap: 6 } }, E('select', { className: 'fi', style: { fontSize: 12, padding: '6px 8px', flex: 1 }, value: f.itemId, onChange: e => set('itemId', e.target.value) },
+            E('option', { value: '' }, 'Select item…'), catalog.map(c => E('option', { key: c.id, value: c.id }, c.code + ' — ' + c.name))),
+            E('button', { type: 'button', className: 'btn btn-outline btn-sm', style: { whiteSpace: 'nowrap', color: teal, borderColor: '#ccfbf1' }, onClick: () => { known.current = new Set(prodItemSvc.getAll().map(i => i.id)); setNewItem(true); } }, E(Ic, { n: 'plus', s: 12 }), ' New item')),
+            newItem ? E(MasterForm, { kind: 'item', onClose: () => setNewItem(false), onSaved: async () => { await prodItemSvc.loadAll(); const n = prodItemSvc.getAll().find(i => !known.current.has(i.id)); setNewItem(false); setTick(x => x + 1); if (n) set('itemId', n.id); } }) : null),
           E('td', { style: { padding: 6 } }, E('strong', null, item ? item.unit : '-')),
           E('td', { style: { padding: 6 } }, E('input', { className: 'fi', style: { fontSize: 12, padding: '6px 8px', width: 110 }, type: 'number', min: 0, step: 'any', value: f.qty, onChange: e => set('qty', e.target.value), placeholder: '0' })))))),
       problems.length && (tank || qty) ? E('div', { className: 'alert alert-red', style: { marginTop: 10, marginBottom: 0 } }, E(Ic, { n: 'alert', s: 13 }), problems[0]) : null));
