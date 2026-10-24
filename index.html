@@ -364,6 +364,34 @@ tbody tr:hover{background:var(--off)}
 .ops-empty{padding:26px 8px;text-align:center;color:#8392b0;font-size:12.5px}
 .ops-ico{display:inline-grid;place-items:center;border-radius:50%;flex:none}
 .ops-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ops-seg{display:inline-flex;background:#e8edf7;border-radius:10px;padding:3px;gap:2px}
+.ops-seg button{all:unset;cursor:pointer;padding:6px 14px;font-size:12px;font-weight:700;color:#42506e;border-radius:8px}
+.ops-seg button.on{background:#1a2744;color:#fff;box-shadow:0 2px 6px rgba(26,39,68,.3)}
+.ops-v-graphic .ops-classic{display:none!important}
+.og-hero{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.og-h{display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:14px 16px;border:1px solid var(--border);border-bottom:3px solid var(--c);box-shadow:0 2px 10px rgba(26,39,68,.05)}
+.og-hv{font-size:22px;font-weight:900;color:#0f1d45;line-height:1.1}.og-hl{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.og-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.og-span2{grid-column:span 2}.og-span3{grid-column:span 3}
+.og-rings{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;padding:6px 0}
+.og-rc{text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.og-ring{position:relative}.og-ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.og-ring-c b{font-size:18px;color:#0f1d45;font-weight:900}.og-ring-c span{font-size:10px;color:#64748b}
+.og-rn{font-weight:800;font-size:13px;color:#0f1d45}.og-rs{font-size:11px;color:#64748b}
+.og-foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);margin-top:10px;padding-top:10px;font-size:12px;color:#64748b;font-weight:700}
+.og-center{display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px 0}.og-big{font-size:26px;font-weight:900;color:#0f1d45;font-variant-numeric:tabular-nums}
+.og-tanks{display:flex;gap:18px;flex-wrap:wrap;justify-content:flex-start;padding:4px 0 2px}
+.og-tank{width:92px;text-align:center}.og-tank-pct{font-weight:900;font-size:14px;color:#0f1d45;margin-top:-2px}.og-tank-n{font-weight:800;font-size:12px;color:#0f1d45}.og-tank-s{font-size:10.5px;color:#64748b;line-height:1.3}
+.og-bars{display:flex;flex-direction:column;gap:9px}.og-brow{display:grid;grid-template-columns:minmax(70px,32%) 1fr auto;gap:8px;align-items:center;font-size:12px}
+.og-bl{font-weight:700;color:#0f1d45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.og-bt{height:12px;background:#eef2fa;border-radius:6px;overflow:hidden}.og-bf{height:100%;border-radius:6px;transition:width .6s}.og-bv{font-weight:800;color:#42506e;font-size:11.5px;white-space:nowrap}
+.og-cons{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}.og-cpn{font-weight:900;font-size:12.5px;color:#0f1d45;margin-bottom:8px}
+.og-crow{display:grid;grid-template-columns:minmax(70px,30%) 1fr auto;gap:8px;align-items:center;margin-bottom:9px;font-size:12px}.og-cm{font-weight:700;color:#0f1d45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.og-cbars{display:flex;flex-direction:column;gap:3px}.og-cb{height:8px;background:#f1f5fb;border-radius:4px;overflow:hidden}.og-cb i{display:block;height:100%;border-radius:4px;transition:width .6s}.og-cv{font-size:11px;font-weight:800;color:#42506e;white-space:nowrap}
+.og-key{display:flex;gap:14px;font-size:11px;color:#64748b;margin-top:4px}.og-key i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.og-trn{display:flex;flex-direction:column;gap:8px}.og-tr{display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-size:12px;border-left:3px solid #06b6d4;padding-left:10px}.og-tr span{grid-column:1;color:#64748b;font-size:11px}.og-tr em{grid-row:1/3;grid-column:2;font-style:normal;font-weight:800;color:#0f1d45;align-self:center}
+@media(max-width:1100px){.og-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.og-span3{grid-column:span 2}.og-hero{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.og-grid{grid-template-columns:minmax(0,1fr)}.og-span2,.og-span3{grid-column:span 1}.og-hero{grid-template-columns:1fr 1fr;gap:8px}.og-hv{font-size:17px}}
+
 .ops-tile{border:1px solid #e6ebf6;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .ops-tn{font-weight:800;font-size:13px;color:#0f1d45}
 .ops-big{font-size:26px;font-weight:800;color:#0f1d45;letter-spacing:-.5px;line-height:1.1}
@@ -8645,11 +8673,84 @@ function OpsConfig({ cfg, onClose, onSaved }) {
 }
 
 
+// ── Graphic view of the Production dashboard (same data as the classic view) ──
+function OgRing({ pct, size = 92, color = '#2563eb', label, sub }) {
+  const r = 40, c = 2 * Math.PI * r, p = Math.max(0, Math.min(100, pct || 0));
+  return E('div', { className: 'og-ring', style: { width: size, height: size } },
+    E('svg', { viewBox: '0 0 100 100', width: size, height: size },
+      E('circle', { cx: 50, cy: 50, r, fill: 'none', stroke: '#e8edf7', strokeWidth: 11 }),
+      E('circle', { cx: 50, cy: 50, r, fill: 'none', stroke: color, strokeWidth: 11, strokeLinecap: 'round', strokeDasharray: (c * p / 100) + ' ' + c, transform: 'rotate(-90 50 50)', style: { transition: 'stroke-dasharray .6s' } })),
+    E('div', { className: 'og-ring-c' }, E('b', null, label != null ? label : (pct == null ? '—' : Math.round(pct) + '%')), sub ? E('span', null, sub) : null));
+}
+function OgTank({ t }) {
+  const pct = t.pct == null ? (t.qty > 0 ? 100 : 0) : Math.max(0, Math.min(100, t.pct));
+  const col = pct >= 90 ? '#ef4444' : pct >= 60 ? '#2563eb' : pct > 0 ? '#06b6d4' : '#cbd5e1';
+  const id = 'tk' + String(t.key).replace(/[^a-z0-9]/gi, '');
+  return E('div', { className: 'og-tank', title: t.name + ' — ' + qf(t.qty, t.unit) + ' ' + t.unit },
+    E('svg', { viewBox: '0 0 80 120', width: 72, height: 108 },
+      E('defs', null, E('clipPath', { id }, E('rect', { x: 8, y: 14, width: 64, height: 94, rx: 8 }))),
+      E('rect', { x: 8, y: 14, width: 64, height: 94, rx: 8, fill: '#f1f5fb', stroke: '#c7d2e8', strokeWidth: 2 }),
+      E('g', { clipPath: 'url(#' + id + ')' }, E('rect', { x: 8, y: 108 - 94 * pct / 100, width: 64, height: 94 * pct / 100 + 1, fill: col, opacity: .9, style: { transition: 'all .6s' } }),
+        E('rect', { x: 8, y: 108 - 94 * pct / 100, width: 64, height: 4, fill: '#fff', opacity: .35 })),
+      E('ellipse', { cx: 40, cy: 14, rx: 32, ry: 6, fill: '#e2e8f4', stroke: '#c7d2e8', strokeWidth: 2 })),
+    E('div', { className: 'og-tank-pct' }, t.pct == null ? '—' : Math.round(pct) + '%'),
+    E('div', { className: 'og-tank-n' }, t.name), E('div', { className: 'og-tank-s' }, t.product || (t.qty > 0 ? '' : 'empty')), E('div', { className: 'og-tank-s' }, qf(t.qty, t.unit) + ' ' + t.unit));
+}
+function OgBars({ rows, unit, color = '#2563eb', empty }) {
+  if (!rows.length) return E('div', { className: 'ops-empty' }, empty || 'Nothing in this period');
+  const mx = Math.max(...rows.map(r => r.qty), 0.0001);
+  return E('div', { className: 'og-bars' }, rows.slice(0, 8).map((r, i) => E('div', { key: r.name, className: 'og-brow' },
+    E('div', { className: 'og-bl' }, r.name), E('div', { className: 'og-bt' }, E('div', { className: 'og-bf', style: { width: Math.max(2, r.qty / mx * 100) + '%', background: OPS_PALETTE[(i + (color === '#2563eb' ? 0 : 3)) % OPS_PALETTE.length] } })),
+    E('div', { className: 'og-bv' }, qf(r.qty, r.unit || unit) + ' ' + (r.unit || unit || '')))));
+}
+function OpsGraphic({ M, win, nav }) {
+  const tanks = M.stock.filter(r => r.kind === 'tank');
+  const consProducts = (M.cons || []).filter(c => c.rows.length);
+  const recvRows = []; M.recv.forEach(g => g.items.forEach(it => recvRows.push({ name: it.name, qty: it.qty, unit: it.unit })));
+  const eff = M.prod.eff;
+  const hero = [['Produced', qf(M.prod.total, M.prod.unit) + ' ' + (M.prod.unit || ''), '#2563eb', 'flask'], ['Run time', fmtHMS(M.run.totalSecs), '#7c3aed', 'clock'], ['Batches', String(M.prod.batches), '#f97316', 'clipboard'], ['Efficiency', eff == null ? '—' : eff.toFixed(1) + '%', '#16a34a', 'check2']];
+  return E('div', { className: 'og ops-graphic' },
+    E('div', { className: 'og-hero' }, hero.map(([l, v, c, ic]) => E('div', { key: l, className: 'og-h', style: { '--c': c } }, E(OpsIcon, { n: ic, color: c, s: 20 }), E('div', null, E('div', { className: 'og-hv' }, v), E('div', { className: 'og-hl' }, l))))),
+    E('div', { className: 'og-grid' },
+      E(OpsCard, { n: 1, title: 'Production vs target', right: E('span', { className: 'ops-pill' }, win.label), className: 'og-span2' },
+        M.prod.cards.length === 0 ? E('div', { className: 'ops-empty' }, 'No production in this period') :
+        E('div', { className: 'og-rings' }, M.prod.cards.slice(0, 4).map((c, i) => E('div', { key: c.name, className: 'og-rc' },
+          E(OgRing, { pct: c.pct, color: pctColor(c.pct) === '#94a3b8' ? '#2563eb' : pctColor(c.pct), label: c.pct == null ? qf(c.produced, c.unit) : null, sub: c.pct == null ? c.unit : 'of target' }),
+          E('div', { className: 'og-rn' }, c.name), E('div', { className: 'og-rs' }, qf(c.produced, c.unit) + ' ' + c.unit + (c.target > 0 ? ' / ' + qf(c.target, c.unit) : ''))))),
+        E('div', { className: 'og-foot' }, E('span', null, 'Status'), E(Badge, { c: ({ 'On Track': 'green', 'In Progress': 'blue', Behind: 'red', Recorded: 'cyan' }[M.prod.status] || 'gray') }, M.prod.status))),
+      E(OpsCard, { n: 2, title: 'Running hours', right: E('span', { className: 'ops-pill' }, M.run.count + ' run' + (M.run.count === 1 ? '' : 's')) },
+        E('div', { className: 'og-center' }, E(OgRing, { pct: M.run.util, size: 140, color: '#7c3aed', sub: 'utilisation' }),
+          E('div', { className: 'og-big' }, fmtHMS(M.run.totalSecs)), E('div', { className: 'ops-sub' }, M.run.latest ? 'Latest batch ' + (M.run.latest.no || '') : 'No runs yet'))),
+      E(OpsCard, { n: 3, title: 'Tank levels', right: E('button', { className: 'btn btn-outline btn-sm', onClick: () => nav('tanks') }, 'Open tanks'), className: 'og-span3' },
+        tanks.length === 0 ? E('div', { className: 'ops-empty' }, 'No tanks yet') : E('div', { className: 'og-tanks' }, tanks.map(t => E(OgTank, { key: t.key, t })))),
+      E(OpsCard, { n: 4, title: 'Final product stock' },
+        M.fin.rows.length === 0 ? E('div', { className: 'ops-empty' }, 'No final product in stock') :
+        E('div', { className: 'ops-donut-wrap' }, E('div', { style: { position: 'relative', width: 150, height: 150, flex: 'none' } }, E(Donut, { rows: M.fin.rows }),
+          E('div', { className: 'ops-donut-c' }, E('div', { className: 'ops-sub' }, 'Total'), E('b', { style: { fontSize: 15 } }, qf(M.fin.total, M.fin.unit)), E('div', { className: 'ops-sub' }, M.fin.unit))),
+          E('div', { className: 'ops-legend' }, M.fin.rows.slice(0, 6).map((r, i) => E('div', { key: r.name, className: 'ops-line' }, E('span', null, E('i', { style: { background: OPS_PALETTE[i % OPS_PALETTE.length] } }), r.name), E('b', null, qf(r.qty, r.unit))))))),
+      E(OpsCard, { n: 5, title: 'Raw material consumption — planned vs actual', className: 'og-span2' },
+        consProducts.length === 0 ? E('div', { className: 'ops-empty' }, 'No consumption in this period') :
+        E('div', { className: 'og-cons' }, consProducts.map(p => E('div', { key: p.name, className: 'og-cp' }, E('div', { className: 'og-cpn' }, p.name),
+          p.rows.map(r => { const mx = Math.max(r.planned || 0, r.consumed || 0, 0.0001); return E('div', { key: r.material, className: 'og-crow' },
+            E('div', { className: 'og-cm' }, r.material), E('div', { className: 'og-cbars' },
+              r.planned != null ? E('div', { className: 'og-cb', title: 'Planned' }, E('i', { style: { width: r.planned / mx * 100 + '%', background: '#c7d2e8' } })) : null,
+              E('div', { className: 'og-cb', title: 'Consumed' }, E('i', { style: { width: r.consumed / mx * 100 + '%', background: r.planned != null && r.consumed > r.planned ? '#ef4444' : '#7c3aed' } }))),
+            E('div', { className: 'og-cv' }, qf(r.consumed, r.unit) + (r.planned != null ? ' / ' + qf(r.planned, r.unit) : '') + ' ' + (r.unit || ''))); }))),
+          E('div', { className: 'og-key' }, E('span', null, E('i', { style: { background: '#c7d2e8' } }), 'Planned'), E('span', null, E('i', { style: { background: '#7c3aed' } }), 'Consumed'), E('span', null, E('i', { style: { background: '#ef4444' } }), 'Over plan')))),
+      E(OpsCard, { n: 6, title: 'Material received', right: E('button', { className: 'btn btn-outline btn-sm', onClick: () => nav('receipts') }, 'Receipts') }, E(OgBars, { rows: recvRows, color: '#2563eb', empty: 'No receipts in this period' })),
+      E(OpsCard, { n: 7, title: 'Dispatch', right: E('button', { className: 'btn btn-outline btn-sm', onClick: () => nav('dispatch') }, 'Dispatch') }, E(OgBars, { rows: M.disp, color: '#f97316', empty: 'Nothing dispatched in this period' })),
+      E(OpsCard, { n: 8, title: 'Transfers (fills)', right: E('button', { className: 'btn btn-outline btn-sm', onClick: () => nav('fill') }, 'Fill') },
+        M.trn.length === 0 ? E('div', { className: 'ops-empty' }, 'No transfers in this period') :
+        E('div', { className: 'og-trn' }, M.trn.slice(0, 5).map(t => E('div', { key: t.key, className: 'og-tr' }, E('b', null, t.material), E('span', null, t.from + ' → ' + t.to), E('em', null, qf(t.qty, t.unit) + ' ' + t.unit)))))));
+}
+
 function OpsDashboard() {
   const { user, isSA, nav, setModal } = useCtx(); const whId = null;
   const [date, setDate] = useState(today()); const [period, setPeriod] = useState('day'); const [shift, setShift] = useState('all');
   const [cfg, setCfg] = useState(opsCfgSvc.get()); const [D, setD] = useState(null); const [err, setErr] = useState(''); const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('All Materials'); const [tick, setTick] = useState(0);
+  const [view, setViewS] = useState(() => { try { return localStorage.getItem('qd_prod_dash_view') === 'graphic' ? 'graphic' : 'classic'; } catch (e) { return 'classic'; } });
+  const setView = v => { setViewS(v); try { localStorage.setItem('qd_prod_dash_view', v); } catch (e) {} };
   const mgr = canManageTanks(user, isSA);
   const win = useMemo(() => opsWindow(date, period, shift, cfg), [date, period, shift, cfg.shiftDayFrom, cfg.shiftDayTo]);
   useEffect(() => {
@@ -8668,10 +8769,11 @@ function OpsDashboard() {
   const stBadge = s => ({ 'On Track': 'green', 'In Progress': 'blue', Behind: 'red', Recorded: 'cyan' }[s] || 'gray');
   const goBtn = (label, page) => E('button', { className: 'btn btn-primary btn-sm', onClick: () => nav(page) }, label);
 
-  return E('div', { className: 'ops' },
+  return E('div', { className: 'ops ops-v-' + view },
     E('div', { className: 'ops-hd' },
       E('h1', { className: 'ops-title' }, cfg.title),
       E('div', { style: { flex: 1 } }),
+      E('div', { className: 'ops-seg', role: 'tablist', 'aria-label': 'Dashboard style' }, [['classic', 'Classic'], ['graphic', 'Graphic']].map(([k, l]) => E('button', { key: k, type: 'button', className: view === k ? 'on' : '', onClick: () => setView(k) }, l))),
       E('input', { className: 'ops-ctl', type: 'date', value: date, onChange: e => e.target.value && setDate(e.target.value), title: 'Date' }),
       E('select', { className: 'ops-ctl', value: period, onChange: e => setPeriod(e.target.value), title: 'Period' }, E('option', { value: 'day' }, 'Day'), E('option', { value: 'week' }, 'Last 7 days'), E('option', { value: 'month' }, 'Month')),
       E('select', { className: 'ops-ctl', value: shift, disabled: period !== 'day', onChange: e => setShift(e.target.value), title: 'Shift' }, Object.entries(shiftLabel).map(([k, v]) => E('option', { key: k, value: k }, v))),
@@ -8687,8 +8789,9 @@ function OpsDashboard() {
         [['Total tanks', M.tanks.total, '#2563eb'], ['Available', M.tanks.available, '#16a34a'], ['Running / processing', M.tanks.processing, '#f59e0b'], ['Maintenance', M.tanks.maintenance, '#7c3aed'], ['Fills today', M.tanks.fillsToday, '#0891b2']]
           .map(([l, v, c]) => E('div', { key: l, className: 'ops-kpi', style: { borderLeft: '3px solid ' + c, cursor: 'pointer' }, onClick: () => nav(l === 'Fills today' ? 'fill' : 'tanks') }, E('b', { style: { color: c } }, v), E('span', null, l)))),
 
+      view === 'graphic' ? E(OpsGraphic, { M, win, nav }) : null,
       // ── row 1 ──
-      E('div', { className: 'ops-grid ops-r1' },
+      E('div', { className: 'ops-grid ops-r1 ops-classic' },
         E(OpsCard, { n: 1, title: 'Production', right: E('span', { className: 'ops-pill' }, win.label) },
           E('div', { className: 'ops-tiles' }, M.prod.cards.length === 0 ? E('div', { className: 'ops-empty' }, 'No production in this period') : M.prod.cards.slice(0, 4).map((c, i) => E('div', { key: c.name, className: 'ops-tile' },
             E('div', { style: { display: 'flex', justifyContent: 'space-between', gap: 6 } }, E('div', { style: { minWidth: 0 } }, E('div', { className: 'ops-tn' }, c.name),
@@ -8724,7 +8827,7 @@ function OpsDashboard() {
           E('div', { style: { textAlign: 'right', marginTop: 10 } }, goBtn('View Receipts', 'receipts')))),
 
       // ── row 2 ──
-      E('div', { className: 'ops-grid ops-r2' },
+      E('div', { className: 'ops-grid ops-r2 ops-classic' },
         E(OpsCard, { n: 4, title: cfg.transferTitle, right: E('span', { className: 'ops-pill' }, win.label) },
           M.trn.length === 0 ? E('div', { className: 'ops-empty' }, 'No transfers in this period') :
           E('div', { className: 'ops-scroll', style: { maxHeight: 190 } }, E('table', { className: 'ops-tbl' }, E('thead', null, E('tr', null, ['From', 'To', 'Material', 'Qty', 'Time'].map(h => E('th', { key: h }, h)))),
@@ -8747,7 +8850,7 @@ function OpsDashboard() {
           E('div', { style: { textAlign: 'right', marginTop: 10 } }, goBtn('View Dispatch', 'dispatch')))),
 
       // ── row 3 ──
-      E('div', { className: 'ops-grid ops-r3' },
+      E('div', { className: 'ops-grid ops-r3 ops-classic' },
         E(OpsCard, { n: 8, title: 'Material Stock' },
           E('div', { className: 'ops-stock' },
             E('div', { className: 'ops-tabs' }, M.stockTabs.map(t => E('button', { key: t, className: 'ops-tabbtn' + (stockTab === t ? ' on' : ''), onClick: () => setTab(t) }, t))),
