@@ -8437,7 +8437,10 @@ const inWin = (win, dateStr, hm) => { if (!dateStr) return false; const t = tsOf
 const MT_UNITS = ['MT', 'TON', 'TONS', 'TONNE', 'TONNES'];
 const qf = (n, unit) => { n = Number(n || 0); return MT_UNITS.includes(String(unit || '').toUpperCase()) ? n.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) : n.toLocaleString('en-US', { maximumFractionDigits: 3 }); };
 const nm = s => String(s || '').toLowerCase().trim();
-const nameHit = (name, key) => { const a = nm(name), b = nm(key); return !!b && a.includes(b); };
+// matches product names ignoring spaces / punctuation / "MT", and never lets "LABSA 3" match "LABSA 3.8" or "LABSA 30"
+const nmKey = s => nm(s).replace(/\b(mt|tons?|tonnes?)\b/g, '').replace(/[^a-z0-9.]/g, '');
+const nameHit = (name, key) => { const a = nmKey(name), b = nmKey(key); if (!b) return false; let i = a.indexOf(b);
+  while (i >= 0) { const nx = a.slice(i + b.length, i + b.length + 2); if (!/^\d/.test(nx) && !/^\.\d/.test(nx)) return true; i = a.indexOf(b, i + 1); } return false; };
 
 // ── data (read-only; every stock number comes straight from Supabase) ──
 
@@ -8475,6 +8478,12 @@ function opsCompute(D, cfg, o) {
   } else {
     const g = new Map(); done.forEach(r => { const k = r.outProduct || '-'; if (!g.has(k)) g.set(k, []); g.get(k).push(r); });
     cards = [...g.entries()].sort((a, b) => b[1].length - a[1].length).slice(0, 2).map(([k, rs]) => ({ name: k, unit: rs[0].unit, target: 0, produced: rs.reduce((s, r) => s + (r.actualQty || 0), 0), pct: null, runs: rs }));
+  }
+  if (cfg.products && cfg.products.length) {
+    // anything produced that is not one of the configured products still counts - shown as its own card so totals always add up
+    const seen = new Set(); cards.forEach(c => c.runs.forEach(r => seen.add(r.id)));
+    const g = new Map(); done.filter(r => !seen.has(r.id) && (r.actualQty || 0) > 0).forEach(r => { const k = r.outProduct || 'Other'; if (!g.has(k)) g.set(k, []); g.get(k).push(r); });
+    g.forEach((rs, k) => cards.push({ name: k, unit: rs[0].unit || '', target: 0, produced: rs.reduce((s, r) => s + (r.actualQty || 0), 0), pct: null, runs: rs, other: true }));
   }
   const matched = new Map(); cards.forEach(c => c.runs.forEach(r => matched.set(r.id, r)));
   const planned = [...matched.values()].filter(r => r.plannedQty > 0 && r.actualQty != null);
@@ -8681,7 +8690,7 @@ function OpsDashboard() {
       // ── row 1 ──
       E('div', { className: 'ops-grid ops-r1' },
         E(OpsCard, { n: 1, title: 'Production', right: E('span', { className: 'ops-pill' }, win.label) },
-          E('div', { className: 'ops-tiles' }, M.prod.cards.length === 0 ? E('div', { className: 'ops-empty' }, 'No production in this period') : M.prod.cards.slice(0, 2).map((c, i) => E('div', { key: c.name, className: 'ops-tile' },
+          E('div', { className: 'ops-tiles' }, M.prod.cards.length === 0 ? E('div', { className: 'ops-empty' }, 'No production in this period') : M.prod.cards.slice(0, 4).map((c, i) => E('div', { key: c.name, className: 'ops-tile' },
             E('div', { style: { display: 'flex', justifyContent: 'space-between', gap: 6 } }, E('div', { style: { minWidth: 0 } }, E('div', { className: 'ops-tn' }, c.name),
               E('div', { className: 'ops-sub' }, c.target > 0 ? 'Target: ' + qf(c.target, c.unit) + ' ' + c.unit : 'No target set')), E(OpsIcon, { n: 'flask', color: i ? '#16a34a' : '#2563eb', s: 22 })),
             E('div', { className: 'ops-big' }, qf(c.produced, c.unit), E('span', { className: 'ops-unit' }, ' ' + c.unit)),
