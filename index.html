@@ -9182,6 +9182,7 @@ function ConsForm({ onDone, onCancel }) {
   const catalog = catalogSvc.get(); const tanks = tanksFor();
   const token = useRef(uid() + uid()); const lock = useRef(false); const [busy, setBusy] = useState(false);
   const blank = () => ({ itemId: '', tankId: '', planned: '', actual: '', remarks: '' });
+  const known = useRef(new Set()); const [newFor, setNewFor] = useState(null); const [, setTick] = useState(0);
   const [f, setF] = useState({ date: today(), forItemId: '', orderId: '', remarks: '' });
   const [rows, setRows] = useState([blank()]);
   const set = (k, v) => setF(p => ({ ...p, [k]: v }));
@@ -9224,8 +9225,9 @@ function ConsForm({ onDone, onCancel }) {
       E('div', { style: { overflowX: 'auto' } }, E('table', { style: { width: '100%', borderCollapse: 'collapse', minWidth: 760 } },
         E('thead', null, E('tr', { style: { background: '#f5f3ff' } }, ['Raw Material', 'UOM', 'Taken From Tank', 'Planned', 'Qty Consumed', 'Remarks', ''].map(th))),
         E('tbody', null, rows.map((r, i) => { const it = catalog.find(c => c.id === r.itemId); return E('tr', { key: i, style: { borderBottom: '1px solid var(--border)' } },
-          E('td', { style: { padding: '6px 6px 6px 0' } }, E('select', { className: 'fi', style: { fontSize: 12, padding: '6px 8px' }, value: r.itemId, onChange: e => setRow(i, 'itemId', e.target.value) },
-            E('option', { value: '' }, 'Select raw material...'), catalog.map(c => E('option', { key: c.id, value: c.id }, c.code + ' — ' + c.name)))),
+          E('td', { style: { padding: '6px 6px 6px 0' } }, E('div', { style: { display: 'flex', gap: 6 } }, E('select', { className: 'fi', style: { fontSize: 12, padding: '6px 8px', flex: 1, minWidth: 150 }, value: r.itemId, onChange: e => setRow(i, 'itemId', e.target.value) },
+            E('option', { value: '' }, 'Select raw material...'), catalog.map(c => E('option', { key: c.id, value: c.id }, c.code + ' \u2014 ' + c.name))),
+            E('button', { type: 'button', className: 'btn btn-outline btn-sm', title: 'Add a new raw material', style: { whiteSpace: 'nowrap', color: purple, borderColor: '#ede9fe' }, onClick: () => { known.current = new Set(prodItemSvc.getAll().map(x => x.id)); setNewFor(i); } }, E(Ic, { n: 'plus', s: 12 }), ' New'))),
           E('td', { style: { padding: 6 } }, E('strong', null, it ? it.unit : '-')),
           E('td', { style: { padding: 6 } }, E('select', { className: 'fi', style: { fontSize: 12, padding: '6px 8px', minWidth: 150 }, value: r.tankId, onChange: e => setRow(i, 'tankId', e.target.value) },
             E('option', { value: '' }, 'Not linked (record only)'), tanks.map(t => E('option', { key: t.id, value: t.id, disabled: ['Maintenance', 'Disabled'].includes(t.status) },
@@ -9234,7 +9236,8 @@ function ConsForm({ onDone, onCancel }) {
           E('td', { style: { padding: 6 } }, E('input', { className: 'fi', style: { fontSize: 12, padding: '6px 8px', width: 90 }, type: 'number', min: 0, step: 'any', value: r.actual, placeholder: '3.8', onChange: e => setRow(i, 'actual', e.target.value) })),
           E('td', { style: { padding: 6 } }, E('input', { className: 'fi', style: { fontSize: 12, padding: '6px 8px' }, value: r.remarks, onChange: e => setRow(i, 'remarks', e.target.value) })),
           E('td', { style: { padding: 6 } }, E('button', { className: 'btn btn-danger btn-icon', style: { width: 28, height: 28, minWidth: 28, padding: 0 }, disabled: rows.length === 1, onClick: () => setRows(rs => rs.filter((_, x) => x !== i)) }, E(Ic, { n: 'x', s: 12 })))); })))),
-      E('div', { style: { marginTop: 10 } }, E('button', { className: 'btn btn-outline btn-sm', style: { color: purple, borderColor: '#ede9fe' }, onClick: () => setRows(rs => [...rs, blank()]) }, E(Ic, { n: 'plus', s: 12 }), ' Add Row'))));
+      E('div', { style: { marginTop: 10 } }, E('button', { className: 'btn btn-outline btn-sm', style: { color: purple, borderColor: '#ede9fe' }, onClick: () => setRows(rs => [...rs, blank()]) }, E(Ic, { n: 'plus', s: 12 }), ' Add Row')),
+      newFor != null ? E(MasterForm, { kind: 'item', onClose: () => setNewFor(null), onSaved: async () => { await prodItemSvc.loadAll(); const n = prodItemSvc.getAll().find(x => !known.current.has(x.id)); const at = newFor; setNewFor(null); setTick(x => x + 1); if (n) setRow(at, 'itemId', n.id); } }) : null));
 }
 
 function ConsumptionPage({ mode }) {
