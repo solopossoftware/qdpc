@@ -2331,7 +2331,6 @@ function Sidebar(){
     {id:'grn',icon:'grv',label:'Purchase (Goods Receipt)'},
     {id:'gin',icon:'giv',label:'GIN (Issue Note)'},
     {id:'transfer',icon:'transfer',label:'Stock Transfer'},
-    {id:'consumption',icon:'fire',label:'Consumption',dot:pendingCON},
     {id:'materialrequest',icon:'clipboard',label:'Material Request',dot:pendingMR},
     {id:'damaged',icon:'alert',label:'Damaged Products',dot:pendingDMG},
     canApprove&&{id:'approvals',icon:'check',label:'Approvals',dot:pendingTotal},
@@ -2531,6 +2530,39 @@ function Dashboard(){
         React.createElement('p',null,'Welcome, '+String(user?.name||'')+' \u00b7 '+(isSA?'All Warehouses \u2014 Super Admin':String(whSvc.getById(whId)?.name||'')))
       )
     ),
+    // Category cards - CLICKABLE
+    React.createElement('div',{className:'card',style:{marginBottom:14}},
+      React.createElement('div',{className:'card-hd'},
+        React.createElement('span',{className:'card-t'},'Category Summary \u2014 Click any card for details'),
+        React.createElement('span',{style:{fontSize:11,color:'var(--txt3)'}},
+          isSA?'All warehouses':'Warehouse: '+String(whSvc.getById(whId)?.name||''))
+      ),
+      React.createElement('div',{className:'grid g5'},
+        catStats.map(c=>React.createElement('div',{
+          key:c.id,
+          className:'card',
+          style:{borderTop:'3px solid '+c.color,cursor:'pointer',transition:'all .15s',margin:0,padding:'14px 12px'},
+          onClick:()=>setDrilldown({type:'category',catId:c.id}),
+        },
+          React.createElement('div',{style:{fontSize:20,marginBottom:8}},c.icon),
+          React.createElement('div',{style:{fontWeight:700,fontSize:12,color:c.color,marginBottom:8}},c.short),
+          React.createElement('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:5}},
+            React.createElement('div',{style:{background:c.bg,borderRadius:6,padding:'5px',textAlign:'center'}},
+              React.createElement('div',{style:{fontSize:15,fontWeight:800,color:c.color}},String(c.count)),
+              React.createElement('div',{style:{fontSize:9,color:'var(--txt3)'}},'ITEMS')
+            ),
+            React.createElement('div',{style:{background:c.bg,borderRadius:6,padding:'5px',textAlign:'center'}},
+              React.createElement('div',{style:{fontSize:15,fontWeight:800,color:c.color}},String(c.qty)),
+              React.createElement('div',{style:{fontSize:9,color:'var(--txt3)'}},'QTY')
+            )
+          ),
+          React.createElement('div',{style:{marginTop:6,fontSize:11,color:'var(--green)',fontWeight:700}},
+            sym+' '+fmt(c.val,0)),
+          React.createElement('div',{style:{marginTop:5,fontSize:10,color:'var(--txt3)',textAlign:'center'}},
+            'Click for details \u2192')
+        ))
+      )
+    ),
     // KPI row
     React.createElement('div',{className:'grid g4',style:{marginBottom:14}},
       kpiRow.map(k=>React.createElement('div',{
@@ -2606,39 +2638,6 @@ function Dashboard(){
                 React.createElement(Badge,{c:r.status==='Approved'?'green':r.status==='Rejected'?'red':'amber'},r.status)
               ))
             )
-      )
-    ),
-    // Category cards - CLICKABLE
-    React.createElement('div',{className:'card',style:{marginBottom:isSA?14:0}},
-      React.createElement('div',{className:'card-hd'},
-        React.createElement('span',{className:'card-t'},'Category Summary \u2014 Click any card for details'),
-        React.createElement('span',{style:{fontSize:11,color:'var(--txt3)'}},
-          isSA?'All warehouses':'Warehouse: '+String(whSvc.getById(whId)?.name||''))
-      ),
-      React.createElement('div',{className:'grid g5'},
-        catStats.map(c=>React.createElement('div',{
-          key:c.id,
-          className:'card',
-          style:{borderTop:'3px solid '+c.color,cursor:'pointer',transition:'all .15s',margin:0,padding:'14px 12px'},
-          onClick:()=>setDrilldown({type:'category',catId:c.id}),
-        },
-          React.createElement('div',{style:{fontSize:20,marginBottom:8}},c.icon),
-          React.createElement('div',{style:{fontWeight:700,fontSize:12,color:c.color,marginBottom:8}},c.short),
-          React.createElement('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:5}},
-            React.createElement('div',{style:{background:c.bg,borderRadius:6,padding:'5px',textAlign:'center'}},
-              React.createElement('div',{style:{fontSize:15,fontWeight:800,color:c.color}},String(c.count)),
-              React.createElement('div',{style:{fontSize:9,color:'var(--txt3)'}},'ITEMS')
-            ),
-            React.createElement('div',{style:{background:c.bg,borderRadius:6,padding:'5px',textAlign:'center'}},
-              React.createElement('div',{style:{fontSize:15,fontWeight:800,color:c.color}},String(c.qty)),
-              React.createElement('div',{style:{fontSize:9,color:'var(--txt3)'}},'QTY')
-            )
-          ),
-          React.createElement('div',{style:{marginTop:6,fontSize:11,color:'var(--green)',fontWeight:700}},
-            sym+' '+fmt(c.val,0)),
-          React.createElement('div',{style:{marginTop:5,fontSize:10,color:'var(--txt3)',textAlign:'center'}},
-            'Click for details \u2192')
-        ))
       )
     ),
     // Warehouse table (SA only)
@@ -6472,7 +6471,6 @@ function Users(){
       {id:'grn',label:'Purchase (GRN)',group:'Transactions'},
       {id:'gin',label:'GIN (Issue Note)',group:'Transactions'},
       {id:'transfer',label:'Stock Transfer',group:'Transactions'},
-      {id:'consumption',label:'Consumption',group:'Transactions'},
       {id:'materialrequest',label:'Material Request',group:'Transactions'},
       {id:'damaged',label:'Damaged Products',group:'Transactions'},
       {id:'approvals',label:'Approvals',group:'Transactions'},
@@ -7057,7 +7055,6 @@ function Approvals(){
         {l:'Pending Purchase',v:pendGRV.length,c:'var(--amber)',ico:'⏳',fn:()=>setTab('grn')},
         {l:'Pending GIN',v:pendGIV.length,c:'var(--amber)',ico:'⏳',fn:()=>setTab('gin')},
         {l:'Pending Transfers',v:pendTRN.length,c:'#0d9488',ico:'🔄',fn:()=>setTab('transfer')},
-        {l:'Pending CON',v:pendCON.length,c:'#7c3aed',ico:'🔥',fn:()=>setTab('con')},
         {l:'Pending MR',v:pendMR.length,c:'var(--blue)',ico:'📋',fn:()=>setTab('mr')},
         {l:'Pending DMG',v:pendDMG.length,c:'var(--red)',ico:'⚠️',fn:()=>setTab('dmg')},
         {l:'Approved Today',v:[...allGRV,...allGIV,...allTRN,...allCON,...allMR,...allDMG].filter(x=>x.status==='Approved'&&(x.approvedAt||'').startsWith(today())).length,c:'var(--green)',ico:'✅',fn:()=>setTab('history')},
@@ -7070,7 +7067,6 @@ function Approvals(){
       canGRV&&React.createElement('div',{className:'tab'+(tab==='grn'?' on':''),onClick:()=>setTab('grn')},'📦 Purchase',pendGRV.length>0&&React.createElement('span',{style:{background:'var(--red)',color:'#fff',borderRadius:20,padding:'1px 6px',fontSize:9,fontWeight:700,marginLeft:4}},String(pendGRV.length))),
       canGIV&&React.createElement('div',{className:'tab'+(tab==='gin'?' on':''),onClick:()=>setTab('gin')},'📤 GIN',pendGIV.length>0&&React.createElement('span',{style:{background:'var(--red)',color:'#fff',borderRadius:20,padding:'1px 6px',fontSize:9,fontWeight:700,marginLeft:4}},String(pendGIV.length))),
       isSA&&React.createElement('div',{className:'tab'+(tab==='transfer'?' on':''),onClick:()=>setTab('transfer')},'🔄 Transfers',pendTRN.length>0&&React.createElement('span',{style:{background:'var(--red)',color:'#fff',borderRadius:20,padding:'1px 6px',fontSize:9,fontWeight:700,marginLeft:4}},String(pendTRN.length))),
-    React.createElement('div',{className:'tab'+(tab==='con'?' on':''),onClick:()=>setTab('con')},'🔥 Consumption',pendCON.length>0&&React.createElement('span',{style:{background:'var(--red)',color:'#fff',borderRadius:20,padding:'1px 6px',fontSize:9,fontWeight:700,marginLeft:4}},String(pendCON.length))),
     React.createElement('div',{className:'tab'+(tab==='mr'?' on':''),onClick:()=>setTab('mr')},'📋 Mat. Request',pendMR.length>0&&React.createElement('span',{style:{background:'var(--red)',color:'#fff',borderRadius:20,padding:'1px 6px',fontSize:9,fontWeight:700,marginLeft:4}},String(pendMR.length))),
     React.createElement('div',{className:'tab'+(tab==='dmg'?' on':''),onClick:()=>setTab('dmg')},'⚠️ Damaged',pendDMG.length>0&&React.createElement('span',{style:{background:'var(--red)',color:'#fff',borderRadius:20,padding:'1px 6px',fontSize:9,fontWeight:700,marginLeft:4}},String(pendDMG.length))),
       React.createElement('div',{className:'tab'+(tab==='history'?' on':''),onClick:()=>setTab('history')},'📋 History')
@@ -10391,7 +10387,6 @@ function App(){
     grn:canSee('grn')?React.createElement(GRVEntry):null,
     gin:canSee('gin')?React.createElement(GIVEntry):null,
     transfer:canSee('transfer')?React.createElement(StockTransfer):null,
-    consumption:canSee('consumption')?React.createElement(Consumption):null,
     materialrequest:canSee('materialrequest')?React.createElement(MaterialRequest):null,
     damaged:canSee('damaged')?React.createElement(DamagedProducts):null,
     approvals:canSee('approvals')?React.createElement(Approvals):null,
@@ -10411,7 +10406,6 @@ function App(){
     grn:['Transaction','Purchase Entry'],
     gin:['Transaction','GIN Entry'],
     transfer:['Transaction','Stock Transfer'],
-    consumption:['Transaction','Consumption'],
     materialrequest:['Transaction','Material Request'],
     damaged:['Transaction','Damaged Products'],
     approvals:['Transaction','Approvals'],
